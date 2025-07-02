@@ -1,0 +1,28 @@
+
+#!/usr/bin/expect -f
+# test_component_manager.exp - Test interactiv pentru component_manager.sh
+# Simulează alegerea opțiunii 1 (Instalează Redis Cache) și apoi ieșire
+
+set timeout 20
+spawn bash ../component_manager.sh
+
+expect {
+    "Alege opțiunea" { send "1\r" }
+    timeout { puts "[FAIL] Nu a apărut promptul de meniu"; exit 1 }
+}
+# Așteaptă finalizarea instalării Redis (sau mesajul de final)
+expect {
+    "DONE" { puts "[PASS] Instalare Redis testată cu succes" }
+    eof { puts "[INFO] Scriptul s-a încheiat" }
+    timeout { puts "[FAIL] Timeout la instalare Redis"; exit 1 }
+}
+# Repornește meniul, alege ieșire
+expect {
+    "Alege opțiunea" { send "0\r" }
+    timeout { puts "[FAIL] Nu a revenit la meniu"; exit 1 }
+}
+expect {
+    "Iesire." { puts "[PASS] Ieșire din manager testată cu succes" }
+    eof { puts "[INFO] Scriptul s-a încheiat" }
+    timeout { puts "[FAIL] Timeout la ieșire"; exit 1 }
+}

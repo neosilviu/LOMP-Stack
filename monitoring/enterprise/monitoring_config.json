@@ -1,0 +1,92 @@
+{
+    "monitoring": {
+        "uptime": {
+            "enabled": true,
+            "check_interval": 60,
+            "timeout": 30,
+            "retry_count": 3,
+            "notification_threshold": 3
+        },
+        "apm": {
+            "enabled": true,
+            "sampling_rate": 0.1,
+            "trace_duration_threshold": 1000,
+            "memory_threshold": 80,
+            "cpu_threshold": 80
+        },
+        "logs": {
+            "enabled": true,
+            "retention_days": 30,
+            "max_size_mb": 100,
+            "log_levels": ["ERROR", "WARN", "INFO"],
+            "real_time_analysis": true
+        },
+        "sla": {
+            "enabled": true,
+            "uptime_target": 99.9,
+            "response_time_target": 200,
+            "error_rate_target": 0.1,
+            "reporting_interval": "daily"
+        },
+        "alerts": {
+            "email_notifications": true,
+            "slack_webhook": "",
+            "telegram_bot_token": "",
+            "alert_cooldown": 300
+        }
+    },
+    "endpoints": [
+        {
+            "name": "Main Website",
+            "url": "http://localhost",
+            "type": "http",
+            "critical": true
+        },
+        {
+            "name": "Database",
+            "host": "localhost",
+            "port": 3306,
+            "type": "tcp",
+            "critical": true
+        },
+        {
+            "name": "Redis Cache",
+            "host": "localhost",
+            "port": 6379,
+            "type": "tcp",
+            "critical": false
+        },
+        {
+            "name": "Admin Panel",
+            "url": "http://localhost/admin",
+            "type": "http",
+            "critical": false
+        }
+    ],
+    "thresholds": {
+        "cpu_warning": 70,
+        "cpu_critical": 90,
+        "memory_warning": 75,
+        "memory_critical": 90,
+        "disk_warning": 80,
+        "disk_critical": 95,
+        "response_time_warning": 500,
+        "response_time_critical": 1000
+    },
+    "notifications": {
+        "email": {
+            "enabled": false,
+            "smtp_server": "",
+            "smtp_port": 587,
+            "username": "",
+            "password": "",
+            "from_address": "",
+            "to_addresses": []
+        },
+        "slack": {
+            "enabled": false,
+            "webhook_url": "",
+            "channel": "#monitoring"
+        }
+    }
+}

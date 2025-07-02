@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Management System Test Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { background: #2c3e50; color: white; padding: 20px; border-radius: 5px; }
+        .summary { background: #ecf0f1; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .pass { color: #27ae60; font-weight: bold; }
+        .fail { color: #e74c3c; font-weight: bold; }
+        .test-results { margin: 20px 0; }
+        .test-item { padding: 5px 0; border-bottom: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔌 API Management System Test Report</h1>
+        <p>Generated on: 2025-07-01 21:39:29</p>
+    </div>
+    
+    <div class="summary">
+        <h2>📊 Test Summary</h2>
+        <p><strong>Total Tests:</strong> 34</p>
+        <p><strong class="pass">Passed:</strong> 28</p>
+        <p><strong class="fail">Failed:</strong> 6</p>
+        <p><strong>Success Rate:</strong> 82%</p>
+    </div>
+    
+    <div class="test-results">
+        <h2>📋 Detailed Results</h2>
+        <div class="test-item pass">✓ [2025-07-01 21:39:28] API Directory: PASS - API directory exists</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:28] API Main Script: PASS - Main API script exists</div>
+        <div class="test-item fail">✗ [2025-07-01 21:39:28] API Server Script: FAIL - API server script not found</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:28] Auth Module: PASS - Authentication module exists</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:28] Webhook Module: PASS - Webhook module exists</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:28] Python3: PASS - Python3 is installed</div>
+        <div class="test-item fail">✗ [2025-07-01 21:39:28] Pip3: FAIL - Pip3 not found</div>
+        <div class="test-item fail">✗ [2025-07-01 21:39:28] Node.js: FAIL - Node.js not found</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:28] cURL: PASS - cURL is installed</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:28] jq: PASS - jq is installed</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:29] API Config: PASS - API configuration file exists</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:29] JWT Secret: PASS - JWT secret file exists</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:29] API Keys: PASS - API keys file exists</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:29] Webhook Config: PASS - Webhook configuration exists</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:29] JSON Validation: PASS - API configuration is valid JSON</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:29] JWT Generation: PASS - JWT secret generated successfully</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:29] API Key Creation: PASS - API key created successfully</div>
+        <div class="test-item fail">✗ [2025-07-01 21:39:29] API Key Validation: FAIL - API key validation failed</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:29] Webhook Init: PASS - Webhook system initialized</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:29] Webhook Add: PASS - Webhook endpoint added successfully</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:29] Webhook Send: PASS - Webhook sent successfully</div>
+        <div class="test-item fail">✗ [2025-07-01 21:39:29] Webhook List: FAIL - Failed to list webhooks</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:29] Sites List API: PASS - Sites list endpoint works</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:29] Site Get API: PASS - Site get endpoint works (expected error for non-existent site)</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:29] Site Create API: PASS - Site create endpoint works</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:29] Site Delete API: PASS - Site delete endpoint works</div>
+        <div class="test-item fail">✗ [2025-07-01 21:39:29] PM2 Available: FAIL - PM2 process manager not found</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:29] Response Time: PASS - Health endpoint responds in 17ms</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:29] Concurrent Requests: PASS - Multiple concurrent requests handled</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:29] Doc Generation: PASS - API documentation generated</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:29] Doc File: PASS - Documentation file exists</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:29] Doc Content: PASS - Documentation content is valid</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:29] Dashboard Exists: PASS - Main dashboard file exists</div>
+        <div class="test-item pass">✓ [2025-07-01 21:39:29] Dashboard Menu: PASS - API Management option in dashboard menu</div>
+    </div>
+</body>
+</html>

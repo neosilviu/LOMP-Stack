@@ -1,0 +1,70 @@
+{
+  "edge_computing": {
+    "version": "1.0.0",
+    "cluster": {
+      "name": "lomp-edge-cluster",
+      "region": "default",
+      "auto_scaling": true,
+      "max_nodes": 10,
+      "min_nodes": 2
+    },
+    "cdn": {
+      "enabled": true,
+      "provider": "nginx",
+      "cache_size": "10GB",
+      "ttl": 3600,
+      "compression": true,
+      "gzip_compression": true,
+      "brotli_compression": false
+    },
+    "load_balancer": {
+      "enabled": true,
+      "algorithm": "round_robin",
+      "health_check": true,
+      "timeout": 30,
+      "ssl_termination": true,
+      "sticky_sessions": false
+    },
+    "caching": {
+      "enabled": true,
+      "type": "redis",
+      "memory_limit": "2GB",
+      "eviction_policy": "allkeys-lru",
+      "persistence": true,
+      "clustering": false
+    },
+    "security": {
+      "ddos_protection": true,
+      "rate_limiting": true,
+      "ssl_termination": true,
+      "waf_enabled": true,
+      "ip_whitelist": [],
+      "cors_enabled": true
+    },
+    "monitoring": {
+      "enabled": true,
+      "metrics_retention": "30d",
+      "alerting": true,
+      "performance_tracking": true,
+      "real_time_analytics": true,
+      "log_aggregation": true
+    },
+    "edge_functions": {
+      "enabled": true,
+      "runtime": "nodejs",
+      "timeout": 30,
+      "memory_limit": "256MB",
+      "concurrent_executions": 100
+    },
+    "geographic_distribution": {
+      "enabled": true,
+      "regions": [
+        "us-east-1",
+        "us-west-2",
+        "eu-west-1",
+        "ap-southeast-1"
+      ],
+      "auto_region_selection": true
+    }
+  }
+}

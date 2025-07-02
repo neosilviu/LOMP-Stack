@@ -1,0 +1,114 @@
+{
+  "cdn_manager": {
+    "version": "2.0.0",
+    "enabled": true,
+    "default_provider": "cloudflare",
+    "multi_cdn_enabled": true,
+    "load_balancing": {
+      "enabled": true,
+      "strategy": "performance",
+      "fallback_enabled": true
+    }
+  },
+  "providers": {
+    "cloudflare": {
+      "enabled": true,
+      "api_token": "",
+      "zone_id": "",
+      "features": {
+        "ssl": true,
+        "waf": true,
+        "ddos_protection": true,
+        "workers": true,
+        "analytics": true
+      },
+      "cache_settings": {
+        "edge_cache_ttl": 3600,
+        "browser_cache_ttl": 14400,
+        "always_online": true,
+        "development_mode": false
+      }
+    },
+    "aws_cloudfront": {
+      "enabled": false,
+      "aws_access_key": "",
+      "aws_secret_key": "",
+      "region": "us-east-1",
+      "features": {
+        "lambda_edge": true,
+        "waf": true,
+        "shield": true,
+        "analytics": true
+      },
+      "cache_settings": {
+        "default_ttl": 86400,
+        "max_ttl": 31536000,
+        "compress": true,
+        "viewer_protocol_policy": "redirect-to-https"
+      }
+    },
+    "azure_cdn": {
+      "enabled": false,
+      "subscription_id": "",
+      "resource_group": "",
+      "profile_name": "",
+      "features": {
+        "compression": true,
+        "https_redirect": true,
+        "analytics": true
+      },
+      "cache_settings": {
+        "cache_expiration": 7200,
+        "compression_enabled": true,
+        "query_string_caching": "IgnoreQueryString"
+      }
+    }
+  },
+  "optimization": {
+    "auto_minification": {
+      "html": true,
+      "css": true,
+      "javascript": true
+    },
+    "image_optimization": {
+      "enabled": true,
+      "webp_conversion": true,
+      "quality": 85,
+      "progressive_jpeg": true
+    },
+    "compression": {
+      "gzip": true,
+      "brotli": true,
+      "compression_level": 6
+    },
+    "http2": {
+      "enabled": true,
+      "server_push": true
+    }
+  },
+  "monitoring": {
+    "performance_tracking": true,
+    "uptime_monitoring": true,
+    "real_user_monitoring": true,
+    "synthetic_monitoring": true,
+    "alerts": {
+      "response_time_threshold": 500,
+      "error_rate_threshold": 5,
+      "uptime_threshold": 99.9
+    }
+  },
+  "security": {
+    "waf_enabled": true,
+    "ddos_protection": true,
+    "bot_management": true,
+    "rate_limiting": {
+      "enabled": true,
+      "requests_per_minute": 1000
+    },
+    "ssl": {
+      "mode": "strict",
+      "min_tls_version": "1.2",
+      "hsts": true
+    }
+  }
+}

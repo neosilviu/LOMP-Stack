@@ -1,0 +1,383 @@
+{
+  "iot_platform": {
+    "version": "1.0.0",
+    "description": "LOMP Stack IoT Management Platform Configuration",
+    "protocols": {
+      "mqtt": {
+        "enabled": true,
+        "broker_host": "localhost",
+        "broker_port": 1883,
+        "secure_port": 8883,
+        "websocket_port": 9001,
+        "auth_enabled": true,
+        "tls_enabled": true,
+        "qos_levels": [0, 1, 2],
+        "retained_messages": true,
+        "client_limit": 1000,
+        "message_size_limit": "256KB"
+      },
+      "coap": {
+        "enabled": true,
+        "port": 5683,
+        "secure_port": 5684,
+        "multicast": true,
+        "block_transfer": true,
+        "observe": true,
+        "resource_discovery": true
+      },
+      "http": {
+        "enabled": true,
+        "port": 8080,
+        "secure_port": 8443,
+        "rest_api": true,
+        "webhook_support": true,
+        "cors_enabled": true,
+        "rate_limiting": {
+          "enabled": true,
+          "requests_per_minute": 100
+        }
+      },
+      "websocket": {
+        "enabled": true,
+        "port": 8081,
+        "secure_port": 8444,
+        "compression": true,
+        "ping_interval": 30,
+        "max_connections": 500
+      },
+      "lorawan": {
+        "enabled": false,
+        "frequency": "868MHz",
+        "spreading_factor": 7,
+        "bandwidth": 125,
+        "coding_rate": "4/5",
+        "network_server": "localhost:1700"
+      },
+      "zigbee": {
+        "enabled": false,
+        "channel": 11,
+        "pan_id": "0x1234",
+        "coordinator_ieee": "auto",
+        "permit_join": false
+      }
+    },
+    "device_management": {
+      "auto_discovery": true,
+      "device_registry": true,
+      "firmware_updates": {
+        "enabled": true,
+        "ota_support": true,
+        "rollback_support": true,
+        "verification": "sha256"
+      },
+      "configuration_management": {
+        "enabled": true,
+        "remote_config": true,
+        "config_templates": true,
+        "bulk_operations": true
+      },
+      "health_monitoring": {
+        "enabled": true,
+        "heartbeat_interval": 60,
+        "health_checks": ["battery", "connectivity", "performance"],
+        "alert_thresholds": {
+          "battery_low": 20,
+          "connection_timeout": 300,
+          "memory_usage": 80
+        }
+      },
+      "remote_control": {
+        "enabled": true,
+        "command_validation": true,
+        "execution_logging": true,
+        "response_timeout": 30
+      },
+      "device_lifecycle": {
+        "provisioning": "auto",
+        "onboarding": "certificate_based",
+        "decommissioning": "secure_wipe"
+      }
+    },
+    "data_processing": {
+      "real_time_analytics": {
+        "enabled": true,
+        "processing_engine": "Apache Kafka Streams",
+        "latency_target": "100ms",
+        "throughput_target": "10000 events/sec"
+      },
+      "stream_processing": {
+        "enabled": true,
+        "windowing": ["tumbling", "sliding", "session"],
+        "aggregations": ["count", "sum", "avg", "min", "max"],
+        "filters": true,
+        "transformations": true
+      },
+      "batch_processing": {
+        "enabled": true,
+        "scheduler": "Apache Airflow",
+        "job_types": ["ETL", "ML_training", "reporting"],
+        "retry_policy": {
+          "max_retries": 3,
+          "backoff": "exponential"
+        }
+      },
+      "machine_learning": {
+        "enabled": true,
+        "frameworks": ["TensorFlow", "PyTorch", "Scikit-learn"],
+        "model_deployment": "TensorFlow Serving",
+        "auto_retraining": true,
+        "feature_store": true
+      },
+      "anomaly_detection": {
+        "enabled": true,
+        "algorithms": ["isolation_forest", "statistical", "neural_network"],
+        "sensitivity": "medium",
+        "alert_actions": ["log", "notify", "isolate"]
+      },
+      "predictive_analytics": {
+        "enabled": true,
+        "models": ["time_series", "regression", "classification"],
+        "forecast_horizon": "24h",
+        "confidence_intervals": true
+      }
+    },
+    "security": {
+      "device_authentication": {
+        "method": "x509",
+        "certificate_authority": "internal",
+        "cert_rotation": "automatic",
+        "cert_validity": "365d",
+        "mutual_tls": true
+      },
+      "communication_encryption": {
+        "protocol": "TLS1.3",
+        "cipher_suites": ["TLS_AES_256_GCM_SHA384", "TLS_CHACHA20_POLY1305_SHA256"],
+        "perfect_forward_secrecy": true,
+        "certificate_pinning": true
+      },
+      "data_encryption": {
+        "algorithm": "AES-256-GCM",
+        "key_management": "HSM",
+        "key_rotation": "30d",
+        "field_level_encryption": true
+      },
+      "access_control": {
+        "model": "RBAC",
+        "fine_grained_permissions": true,
+        "attribute_based": true,
+        "session_management": true,
+        "multi_factor_auth": true
+      },
+      "audit_logging": {
+        "enabled": true,
+        "log_level": "INFO",
+        "retention": "90d",
+        "integrity_protection": true,
+        "siem_integration": true
+      },
+      "intrusion_detection": {
+        "enabled": true,
+        "network_monitoring": true,
+        "behavior_analysis": true,
+        "threat_intelligence": true,
+        "automated_response": true
+      },
+      "vulnerability_management": {
+        "scanning": "continuous",
+        "assessment": "weekly",
+        "patching": "automated",
+        "compliance": ["NIST", "ISO27001"]
+      }
+    },
+    "storage": {
+      "time_series_db": {
+        "engine": "InfluxDB",
+        "version": "2.7",
+        "retention_policies": [
+          {"name": "raw_data", "duration": "7d", "shard_duration": "1h"},
+          {"name": "downsampled_1m", "duration": "30d", "shard_duration": "1d"},
+          {"name": "downsampled_1h", "duration": "365d", "shard_duration": "7d"}
+        ],
+        "continuous_queries": true,
+        "clustering": false,
+        "backup_schedule": "daily"
+      },
+      "document_db": {
+        "engine": "MongoDB",
+        "version": "6.0",
+        "collections": ["devices", "users", "configurations", "events"],
+        "indexing": "automatic",
+        "sharding": false,
+        "replica_set": false
+      },
+      "cache": {
+        "engine": "Redis",
+        "version": "7.0",
+        "memory_limit": "256MB",
+        "eviction_policy": "allkeys-lru",
+        "persistence": "RDB",
+        "clustering": false
+      },
+      "backup": {
+        "enabled": true,
+        "schedule": "daily",
+        "retention": "30d",
+        "compression": true,
+        "encryption": true,
+        "destinations": ["local", "s3"]
+      },
+      "data_lifecycle": {
+        "archival": "automated",
+        "hot_storage": "7d",
+        "warm_storage": "30d",
+        "cold_storage": "365d",
+        "deletion": "policy_based"
+      }
+    },
+    "edge_computing": {
+      "enabled": true,
+      "edge_nodes": {
+        "count": 3,
+        "specifications": {
+          "cpu": "ARM Cortex-A72",
+          "memory": "4GB",
+          "storage": "32GB",
+          "connectivity": ["WiFi", "Ethernet", "4G"]
+        },
+        "deployment": "kubernetes"
+      },
+      "processing_capabilities": {
+        "data_filtering": true,
+        "data_aggregation": true,
+        "local_analytics": true,
+        "ml_inference": true,
+        "alert_generation": true
+      },
+      "synchronization": {
+        "interval": 300,
+        "conflict_resolution": "timestamp",
+        "bandwidth_optimization": true,
+        "compression": "gzip"
+      },
+      "offline_operation": {
+        "supported": true,
+        "local_storage": "24h",
+        "queue_management": true,
+        "priority_handling": true
+      }
+    },
+    "integration": {
+      "cloud_platforms": {
+        "aws": {
+          "enabled": true,
+          "services": ["IoT Core", "Kinesis", "Lambda", "S3"],
+          "region": "us-east-1"
+        },
+        "azure": {
+          "enabled": true,
+          "services": ["IoT Hub", "Stream Analytics", "Functions", "Blob Storage"],
+          "region": "East US"
+        },
+        "gcp": {
+          "enabled": true,
+          "services": ["Cloud IoT Core", "Pub/Sub", "Functions", "Cloud Storage"],
+          "region": "us-central1"
+        }
+      },
+      "third_party_apis": {
+        "enabled": true,
+        "authentication": "OAuth2",
+        "rate_limiting": true,
+        "circuit_breaker": true,
+        "timeout": 30
+      },
+      "webhook_support": {
+        "enabled": true,
+        "retry_policy": "exponential_backoff",
+        "signature_verification": true,
+        "payload_validation": true
+      },
+      "message_queues": {
+        "kafka": {
+          "enabled": true,
+          "brokers": 3,
+          "replication_factor": 2,
+          "partitions": 12
+        },
+        "rabbitmq": {
+          "enabled": false,
+          "vhost": "/iot",
+          "exchange_type": "topic"
+        }
+      },
+      "api_gateway": {
+        "enabled": true,
+        "rate_limiting": true,
+        "authentication": true,
+        "load_balancing": true,
+        "monitoring": true
+      }
+    },
+    "monitoring": {
+      "metrics": {
+        "collection": "Prometheus",
+        "visualization": "Grafana",
+        "alerting": "AlertManager",
+        "retention": "15d"
+      },
+      "logging": {
+        "aggregation": "ELK Stack",
+        "structured_logging": true,
+        "log_levels": ["ERROR", "WARN", "INFO", "DEBUG"],
+        "retention": "30d"
+      },
+      "tracing": {
+        "enabled": true,
+        "system": "Jaeger",
+        "sampling_rate": 0.1,
+        "retention": "7d"
+      },
+      "health_checks": {
+        "endpoints": true,
+        "database_connectivity": true,
+        "external_services": true,
+        "resource_utilization": true
+      }
+    },
+    "performance": {
+      "scaling": {
+        "horizontal": true,
+        "vertical": true,
+        "auto_scaling": true,
+        "load_balancing": "round_robin"
+      },
+      "optimization": {
+        "connection_pooling": true,
+        "caching_strategy": "multi_level",
+        "data_compression": true,
+        "batch_processing": true
+      },
+      "resource_limits": {
+        "max_connections": 10000,
+        "memory_limit": "8GB",
+        "cpu_limit": "4 cores",
+        "disk_space": "100GB"
+      }
+    },
+    "compliance": {
+      "standards": ["GDPR", "HIPAA", "SOC2", "ISO27001"],
+      "data_privacy": {
+        "anonymization": true,
+        "consent_management": true,
+        "right_to_deletion": true,
+        "data_portability": true
+      },
+      "audit_trail": {
+        "enabled": true,
+        "immutable": true,
+        "digital_signatures": true,
+        "compliance_reporting": true
+      }
+    }
+  }
+}

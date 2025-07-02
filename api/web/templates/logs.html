@@ -1,0 +1,493 @@
+<!--
+LOMP Stack v3.0 Template
+Author: Silviu Ilie <neosilviu@gmail.com>
+Company: aemdPC
+Copyright © 2025 aemdPC. All rights reserved.
+-->
+{% extends "base.html" %}
+
+{% block title %}System Logs{% endblock %}
+{% block page_title %}System Logs{% endblock %}
+{% block subtitle %}View and analyze system logs{% endblock %}
+
+{% block content %}
+<!-- Log Controls -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-primary" onclick="refreshLogs()">
+                <i class="fas fa-sync-alt me-2"></i>
+                Refresh
+            </button>
+            <button type="button" class="btn btn-secondary" onclick="clearLogs()">
+                <i class="fas fa-trash me-2"></i>
+                Clear
+            </button>
+            <button type="button" class="btn btn-info" onclick="downloadLogs()">
+                <i class="fas fa-download me-2"></i>
+                Download
+            </button>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="input-group">
+            <input type="text" class="form-control" id="logFilter" placeholder="Filter logs..." onkeyup="filterLogs()">
+            <button class="btn btn-outline-secondary" type="button" onclick="clearFilter()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Log Level Filters -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body py-3">
+                <div class="d-flex align-items-center">
+                    <span class="me-3"><strong>Filter by level:</strong></span>
+                    
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="showInfo" checked onchange="filterByLevel()">
+                        <label class="form-check-label" for="showInfo">
+                            <span class="badge bg-info">INFO</span>
+                        </label>
+                    </div>
+                    
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="showSuccess" checked onchange="filterByLevel()">
+                        <label class="form-check-label" for="showSuccess">
+                            <span class="badge bg-success">SUCCESS</span>
+                        </label>
+                    </div>
+                    
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="showWarning" checked onchange="filterByLevel()">
+                        <label class="form-check-label" for="showWarning">
+                            <span class="badge bg-warning">WARNING</span>
+                        </label>
+                    </div>
+                    
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="showError" checked onchange="filterByLevel()">
+                        <label class="form-check-label" for="showError">
+                            <span class="badge bg-danger">ERROR</span>
+                        </label>
+                    </div>
+                    
+                    <div class="ms-auto">
+                        <span class="badge bg-secondary" id="logCount">{{ logs|length }} entries</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Log Viewer -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-file-alt me-2"></i>
+                    API Management Logs
+                    <span class="badge bg-secondary ms-2">Live</span>
+                </h5>
+                
+                <div class="log-container" id="logContainer">
+                    {% if logs %}
+                        {% for log in logs %}
+                            {{ parse_log_line(log) }}
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-file-alt fa-2x text-muted mb-3"></i>
+                            <h6 class="text-muted">No logs available</h6>
+                            <p class="text-muted">Logs will appear here as the system generates them.</p>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div>
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Logs are automatically refreshed every 30 seconds
+                        </small>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="scrollToBottom()">
+                            <i class="fas fa-arrow-down me-1"></i>
+                            Scroll to Bottom
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Log Statistics -->
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-info" id="infoCount">0</h3>
+                <p class="card-text">Info Messages</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-success" id="successCount">0</h3>
+                <p class="card-text">Success Messages</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-warning" id="warningCount">0</h3>
+                <p class="card-text">Warnings</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-danger" id="errorCount">0</h3>
+                <p class="card-text">Errors</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let allLogs = [];
+let filteredLogs = [];
+
+// Parse log lines and categorize them
+function parseLogLine(logLine) {
+    const line = logLine.trim();
+    if (!line) return '';
+    
+    let level = 'INFO';
+    let className = 'text-info';
+    let icon = 'fas fa-info-circle';
+    
+    if (line.includes('[ERROR]')) {
+        level = 'ERROR';
+        className = 'text-danger';
+        icon = 'fas fa-exclamation-triangle';
+    } else if (line.includes('[WARNING]')) {
+        level = 'WARNING';
+        className = 'text-warning';
+        icon = 'fas fa-exclamation-circle';
+    } else if (line.includes('[SUCCESS]')) {
+        level = 'SUCCESS';
+        className = 'text-success';
+        icon = 'fas fa-check-circle';
+    }
+    
+    const timestamp = line.match(/\[(.*?)\]/)?.[1] || '';
+    const message = line.replace(/\[.*?\]/g, '').trim();
+    
+    return {
+        level: level,
+        timestamp: timestamp,
+        message: message,
+        className: className,
+        icon: icon,
+        raw: line
+    };
+}
+
+// Initialize logs
+function initializeLogs() {
+    const logContainer = document.getElementById('logContainer');
+    const logLines = logContainer.textContent.split('\n');
+    
+    allLogs = [];
+    logLines.forEach(line => {
+        if (line.trim()) {
+            allLogs.push(parseLogLine(line));
+        }
+    });
+    
+    renderLogs();
+    updateLogStatistics();
+}
+
+// Render logs in the container
+function renderLogs() {
+    const logContainer = document.getElementById('logContainer');
+    
+    if (filteredLogs.length === 0) {
+        logContainer.innerHTML = `
+            <div class="text-center py-4">
+                <i class="fas fa-search fa-2x text-muted mb-3"></i>
+                <h6 class="text-muted">No logs match the current filter</h6>
+                <p class="text-muted">Try adjusting your search criteria.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '';
+    filteredLogs.forEach(log => {
+        html += `
+            <div class="log-entry ${log.className}" data-level="${log.level}">
+                <i class="${log.icon} me-2"></i>
+                <span class="timestamp text-muted">[${log.timestamp}]</span>
+                <span class="level-badge badge bg-${getLevelBadgeClass(log.level)} me-2">${log.level}</span>
+                <span class="message">${escapeHtml(log.message)}</span>
+            </div>
+        `;
+    });
+    
+    logContainer.innerHTML = html;
+    scrollToBottom();
+}
+
+// Get badge class for log level
+function getLevelBadgeClass(level) {
+    switch(level) {
+        case 'ERROR': return 'danger';
+        case 'WARNING': return 'warning';
+        case 'SUCCESS': return 'success';
+        default: return 'info';
+    }
+}
+
+// Escape HTML characters
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Filter logs by text
+function filterLogs() {
+    const filterText = document.getElementById('logFilter').value.toLowerCase();
+    
+    filteredLogs = allLogs.filter(log => {
+        const matchesText = filterText === '' || 
+                           log.message.toLowerCase().includes(filterText) ||
+                           log.timestamp.toLowerCase().includes(filterText);
+        
+        const matchesLevel = isLevelVisible(log.level);
+        
+        return matchesText && matchesLevel;
+    });
+    
+    renderLogs();
+    updateLogCount();
+}
+
+// Filter logs by level
+function filterByLevel() {
+    filterLogs(); // Reapply all filters
+}
+
+// Check if log level should be visible
+function isLevelVisible(level) {
+    switch(level) {
+        case 'INFO':
+            return document.getElementById('showInfo').checked;
+        case 'SUCCESS':
+            return document.getElementById('showSuccess').checked;
+        case 'WARNING':
+            return document.getElementById('showWarning').checked;
+        case 'ERROR':
+            return document.getElementById('showError').checked;
+        default:
+            return true;
+    }
+}
+
+// Clear filter
+function clearFilter() {
+    document.getElementById('logFilter').value = '';
+    filterLogs();
+}
+
+// Update log count
+function updateLogCount() {
+    document.getElementById('logCount').textContent = filteredLogs.length + ' entries';
+}
+
+// Update log statistics
+function updateLogStatistics() {
+    let infoCount = 0, successCount = 0, warningCount = 0, errorCount = 0;
+    
+    allLogs.forEach(log => {
+        switch(log.level) {
+            case 'INFO': infoCount++; break;
+            case 'SUCCESS': successCount++; break;
+            case 'WARNING': warningCount++; break;
+            case 'ERROR': errorCount++; break;
+        }
+    });
+    
+    document.getElementById('infoCount').textContent = infoCount;
+    document.getElementById('successCount').textContent = successCount;
+    document.getElementById('warningCount').textContent = warningCount;
+    document.getElementById('errorCount').textContent = errorCount;
+}
+
+// Scroll to bottom of log container
+function scrollToBottom() {
+    const logContainer = document.getElementById('logContainer');
+    logContainer.scrollTop = logContainer.scrollHeight;
+}
+
+// Refresh logs
+function refreshLogs() {
+    location.reload();
+}
+
+// Clear logs (placeholder - would need backend implementation)
+function clearLogs() {
+    if (confirm('Are you sure you want to clear all logs? This action cannot be undone.')) {
+        showNotification('Clear logs functionality would be implemented on the backend.', 'info');
+    }
+}
+
+// Download logs
+function downloadLogs() {
+    let logText = '';
+    allLogs.forEach(log => {
+        logText += log.raw + '\n';
+    });
+    
+    const blob = new Blob([logText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'api_logs_' + new Date().toISOString().slice(0, 19).replace(/:/g, '-') + '.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+// Auto-refresh logs every 30 seconds
+setInterval(function() {
+    // In a real implementation, this would fetch new logs via AJAX
+    console.log('Auto-refresh logs (not implemented in demo)');
+}, 30000);
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Set initial filtered logs to all logs
+    // Render logs as array of strings, then parse each line
+    const rawLogs = {{ logs|default([])|tojson|safe }};
+    allLogs = rawLogs.map(parseLogLine);
+    filteredLogs = [...allLogs];
+    renderLogs();
+    updateLogStatistics();
+    updateLogCount();
+});
+
+// Utility function for notifications
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, 5000);
+}
+</script>
+
+<style>
+.log-container {
+    background: #2d3748;
+    color: #e2e8f0;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    border-radius: 10px;
+    padding: 15px;
+    max-height: 500px;
+    overflow-y: auto;
+    border: 1px solid #4a5568;
+}
+
+.log-entry {
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    word-wrap: break-word;
+}
+
+.log-entry:last-child {
+    border-bottom: none;
+}
+
+.log-entry .timestamp {
+    color: #a0aec0;
+    font-size: 12px;
+}
+
+.log-entry .level-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+}
+
+.log-entry .message {
+    color: #e2e8f0;
+}
+
+.log-entry.text-danger .message {
+    color: #fed7d7;
+}
+
+.log-entry.text-warning .message {
+    color: #faf089;
+}
+
+.log-entry.text-success .message {
+    color: #c6f6d5;
+}
+
+.log-entry.text-info .message {
+    color: #bee3f8;
+}
+
+.log-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.log-container::-webkit-scrollbar-track {
+    background: #4a5568;
+    border-radius: 4px;
+}
+
+.log-container::-webkit-scrollbar-thumb {
+    background: #718096;
+    border-radius: 4px;
+}
+
+.log-container::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+</style>
+{% endblock %}

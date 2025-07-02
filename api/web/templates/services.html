@@ -1,0 +1,367 @@
+<!--
+LOMP Stack v3.0 Template
+Author: Silviu Ilie <neosilviu@gmail.com>
+Company: aemdPC
+Copyright © 2025 aemdPC. All rights reserved.
+-->
+{% extends "base.html" %}
+
+{% block title %}Services Management{% endblock %}
+{% block page_title %}Services Management{% endblock %}
+{% block subtitle %}Monitor and control system services{% endblock %}
+
+{% block content %}
+<!-- Services Overview -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">Total Services</h6>
+                    <h3 class="mb-0">{{ services|length }}</h3>
+                </div>
+                <i class="fas fa-server fa-2x opacity-75"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #00b894 0%, #00a085 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">Active Services</h6>
+                    <h3 class="mb-0">{{ services|selectattr('status', 'equalto', 'active')|list|length }}</h3>
+                </div>
+                <i class="fas fa-check-circle fa-2x opacity-75"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">Inactive Services</h6>
+                    <h3 class="mb-0">{{ services|selectattr('status', 'equalto', 'inactive')|list|length }}</h3>
+                </div>
+                <i class="fas fa-times-circle fa-2x opacity-75"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">Web Servers</h6>
+                    <h3 class="mb-0">{{ services|selectattr('type', 'equalto', 'web_server')|list|length }}</h3>
+                </div>
+                <i class="fas fa-globe fa-2x opacity-75"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Services by Category -->
+{% set service_types = services|groupby('type') %}
+{% for service_type, type_services in service_types %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    {% if service_type == 'web_server' %}
+                    <i class="fas fa-globe me-2"></i>Web Servers
+                    {% elif service_type == 'database' %}
+                    <i class="fas fa-database me-2"></i>Database Services
+                    {% elif service_type == 'cache' %}
+                    <i class="fas fa-memory me-2"></i>Cache Services
+                    {% elif service_type == 'php' %}
+                    <i class="fab fa-php me-2"></i>PHP Services
+                    {% elif service_type == 'ssl' %}
+                    <i class="fas fa-lock me-2"></i>SSL Services
+                    {% else %}
+                    <i class="fas fa-cogs me-2"></i>{{ service_type.replace('_', ' ').title() }} Services
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for service in type_services %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card {% if service.status == 'active' %}border-success{% else %}border-danger{% endif %}">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <h6 class="card-title mb-1">{{ service.name }}</h6>
+                                        <small class="text-muted">{{ service.type.replace('_', ' ').title() }}</small>
+                                    </div>
+                                    <div class="text-end">
+                                        {% if service.status == 'active' %}
+                                        <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                {% if service.port %}
+                                <div class="mb-2">
+                                    <small class="text-muted">Port: </small>
+                                    <span class="badge bg-info">{{ service.port }}</span>
+                                </div>
+                                {% endif %}
+                                
+                                <div class="mb-3">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <small class="text-muted">CPU</small>
+                                            <div class="fw-bold">{{ "%.1f"|format(service.cpu_usage or 0) }}%</div>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted">Memory</small>
+                                            <div class="fw-bold">{{ service.memory_usage or 0 }} MB</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {% if service.uptime %}
+                                <div class="mb-3">
+                                    <small class="text-muted">Uptime: {{ service.uptime }} minutes</small>
+                                </div>
+                                {% endif %}
+                                
+                                <div class="btn-group w-100" role="group">
+                                    {% if service.status == 'active' %}
+                                    <button class="btn btn-warning btn-sm" onclick="manageService('{{ service.name }}', 'stop')">
+                                        <i class="fas fa-stop"></i> Stop
+                                    </button>
+                                    <button class="btn btn-info btn-sm" onclick="manageService('{{ service.name }}', 'restart')">
+                                        <i class="fas fa-redo"></i> Restart
+                                    </button>
+                                    {% else %}
+                                    <button class="btn btn-success btn-sm" onclick="manageService('{{ service.name }}', 'start')">
+                                        <i class="fas fa-play"></i> Start
+                                    </button>
+                                    {% endif %}
+                                    <button class="btn btn-outline-secondary btn-sm" onclick="showServiceConfig('{{ service.name }}')">
+                                        <i class="fas fa-cog"></i> Config
+                                    </button>
+                                </div>
+                                
+                                {% if service.last_restart %}
+                                <div class="mt-2">
+                                    <small class="text-muted">Last restart: {{ service.last_restart }}</small>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Service Configuration Modal -->
+<div class="modal fade" id="serviceConfigModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Service Configuration</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="serviceConfigContent">
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading configuration...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="saveServiceConfig()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Operations -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-tasks me-2"></i>
+                    Bulk Operations
+                </h5>
+                
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="d-grid">
+                            <button class="btn btn-success" onclick="bulkAction('start', 'web_server')">
+                                <i class="fas fa-play me-2"></i>
+                                Start All Web Servers
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="d-grid">
+                            <button class="btn btn-info" onclick="bulkAction('restart', 'php')">
+                                <i class="fas fa-redo me-2"></i>
+                                Restart PHP Services
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="d-grid">
+                            <button class="btn btn-warning" onclick="bulkAction('reload', 'web_server')">
+                                <i class="fas fa-sync me-2"></i>
+                                Reload Web Configs
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="d-grid">
+                            <button class="btn btn-outline-danger" onclick="confirmBulkStop()">
+                                <i class="fas fa-stop me-2"></i>
+                                Emergency Stop All
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Notification system
+function showNotification(message, type = 'info') {
+    const alertsContainer = document.getElementById('alerts-container') || 
+                           (() => {
+                               const container = document.createElement('div');
+                               container.id = 'alerts-container';
+                               container.style.position = 'fixed';
+                               container.style.top = '20px';
+                               container.style.right = '20px';
+                               container.style.zIndex = '9999';
+                               container.style.minWidth = '300px';
+                               document.body.appendChild(container);
+                               return container;
+                           })();
+
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.style.marginBottom = '10px';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+
+    alertsContainer.appendChild(alertDiv);
+
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+
+function manageService(serviceName, action) {
+    if (action === 'stop' && !confirm(`Are you sure you want to stop ${serviceName}?`)) {
+        return;
+    }
+    
+    const button = event.target.closest('button');
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + action.charAt(0).toUpperCase() + action.slice(1) + 'ing...';
+    button.disabled = true;
+    
+    fetch(`/api/services/${serviceName}/${action}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(data.message, 'success');
+            location.reload();
+        } else {
+            showNotification('Error: ' + data.message, 'danger');
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Error managing service', 'danger');
+        button.innerHTML = originalText;
+        button.disabled = false;
+    });
+}
+
+function showServiceConfig(serviceName) {
+    const modal = new bootstrap.Modal(document.getElementById('serviceConfigModal'));
+    modal.show();
+    
+    document.querySelector('.modal-title').textContent = `Configuration - ${serviceName}`;
+    
+    fetch(`/api/services/${serviceName}/config`)
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('serviceConfigContent').innerHTML = `
+            <textarea class="form-control" rows="20" style="font-family: monospace; font-size: 12px;">${data.config}</textarea>
+        `;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('serviceConfigContent').innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Error loading configuration: ${error.message}
+            </div>
+        `;
+    });
+}
+
+function saveServiceConfig() {
+    showNotification('Configuration saving feature will be implemented in the next update.', 'info');
+}
+
+function bulkAction(action, serviceType) {
+    if (!confirm(`Are you sure you want to ${action} all ${serviceType.replace('_', ' ')} services?`)) {
+        return;
+    }
+    
+    // This would be implemented to handle bulk operations
+    showNotification(`Bulk ${action} for ${serviceType} services will be implemented in the next update.`, 'info');
+}
+
+function confirmBulkStop() {
+    if (confirm('⚠️ WARNING: This will stop ALL services! Are you absolutely sure?')) {
+        if (confirm('This action may cause downtime. Type "EMERGENCY" to confirm:')) {
+            showNotification('Emergency stop feature will be implemented with additional safety measures.', 'warning');
+        }
+    }
+}
+
+// Auto-refresh every 30 seconds
+setInterval(function() {
+    location.reload();
+}, 30000);
+</script>
+{% endblock %}

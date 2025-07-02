@@ -1,0 +1,23 @@
+{
+    "webhooks": [
+        {
+            "id": "site-created",
+            "name": "Site Created",
+            "url": "https://example.com/webhooks/site-created",
+            "events": ["site.created"],
+            "active": true,
+            "secret": "webhook_secret_key",
+            "retry_attempts": 3,
+            "created_at": "2025-07-01T10:00:00Z"
+        }
+    ],
+    "events": [
+        "site.created",
+        "site.deleted", 
+        "backup.created",
+        "backup.completed",
+        "backup.failed",
+        "system.alert",
+        "security.incident"
+    ]
+}

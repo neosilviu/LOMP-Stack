@@ -1,0 +1,32 @@
+{
+  "deployment_strategy": "multi_region",
+  "primary_provider": "aws",
+  "secondary_provider": "digitalocean",
+  "tertiary_provider": "azure",
+  "failover_enabled": true,
+  "load_balancing": true,
+  "auto_scaling": true,
+  "cost_optimization": true,
+  "regions": {
+    "aws": ["us-east-1", "eu-west-1", "ap-southeast-1"],
+    "digitalocean": ["nyc1", "ams3", "sgp1"],
+    "azure": ["eastus", "westeurope", "southeastasia"]
+  },
+  "deployment_configs": {
+    "web_tier": {
+      "min_instances": 2,
+      "max_instances": 10,
+      "target_cpu": 70
+    },
+    "db_tier": {
+      "backup_frequency": "daily",
+      "multi_az": true,
+      "read_replicas": 2
+    }
+  },
+  "cost_thresholds": {
+    "daily_budget": 100,
+    "monthly_budget": 2000,
+    "alert_threshold": 80
+  }
+}

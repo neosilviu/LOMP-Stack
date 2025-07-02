@@ -1,0 +1,4 @@
+#!/bin/bash
+# Wrapper pentru WP-CLI cu PHP standard
+export WP_CLI_PHP=/usr/bin/php
+exec /usr/local/bin/wp "$@"

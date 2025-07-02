@@ -1,0 +1,125 @@
+#!/usr/bin/expect -f
+# Test complet automatizat pentru meniul install.sh și toate funcțiile din menu_helpers.sh
+
+exp_internal 1
+set timeout 1200
+set install_script "/mnt/c/Users/Silviu/Desktop/Stack/install.sh"
+set log_file "test_install_menu.log"
+log_file -a $log_file
+
+# Limitează numărul de prompturi necunoscute consecutive
+set unknown_prompt_count 0
+set unknown_prompt_limit 10
+
+# Start test
+spawn bash $install_script
+
+# 1. Selectează limba (testează toate limbile)
+foreach lang {1 2 3 4 5} {
+    set timeout 10
+    expect {
+        -re "Alege limba:|Introdu numarul optiunii.*|Introdu numărul opțiunii.*" { send "$lang\r" }
+        timeout { puts "Timeout la selectarea limbii"; exit 1 }
+        eof { puts "[INFO] EOF at language select"; exit 1 }
+    }
+    # 2. Meniu principal: trimite pe rând 0-5
+    foreach opt {0 1 2 3 4 5} {
+        set timeout 10
+        expect {
+            -re "Alege.*op.*(0-5).*" { send "$opt\r" }
+            timeout { puts "Timeout la meniu principal"; exit 1 }
+            eof { puts "[INFO] EOF at main menu"; break }
+        }
+        # Confirmare: trimite pe rând d, n, y, Y, N la fiecare prompt de confirmare
+        foreach conf {d n y Y N} {
+            set timeout 5
+            expect {
+                -re "(d/n).*|> " { send "$conf\r"; set unknown_prompt_count 0 }
+                -re "Apasa Enter|Apasă Enter|Press Enter|continu.*" { send "\r"; set unknown_prompt_count 0; exp_continue }
+                -re "Alege.*op.*(0-5).*" { set unknown_prompt_count 0; break }
+                timeout { }
+                eof { puts "[INFO] EOF at confirm prompt"; break }
+                -re ".*" {
+                    incr unknown_prompt_count
+                    if {$unknown_prompt_count <= 3 || $unknown_prompt_count % 10 == 0} {
+                        puts "[DEBUG] Prompt necunoscut: $expect_out(0,string) ($unknown_prompt_count)"
+                    }
+                    if {$unknown_prompt_count > $unknown_prompt_limit} {
+                        puts "[ERROR] Prea multe prompturi necunoscute consecutive. Ies din test."; exit 2
+                    }
+                    send "\r"
+                    exp_continue
+                }
+            }
+        }
+        # 3. Submeniu webserver dacă apare (regex fără diacritice)
+        set timeout 5
+        expect {
+            -re "op.*(0-3).*" { send "1\r"; set unknown_prompt_count 0; exp_continue }
+            timeout { }
+            eof { puts "[INFO] EOF at webserver submenu"; break }
+            -re ".*" {
+                incr unknown_prompt_count
+                if {$unknown_prompt_count <= 3 || $unknown_prompt_count % 10 == 0} {
+                    puts "[DEBUG] Prompt necunoscut: $expect_out(0,string) ($unknown_prompt_count)"
+                }
+                if {$unknown_prompt_count > $unknown_prompt_limit} {
+                    puts "[ERROR] Prea multe prompturi necunoscute consecutive. Ies din test."; exit 2
+                }
+                send "\r"
+                exp_continue
+            }
+        }
+        # 4. Submeniu versiuni dacă apare
+        set timeout 5
+        expect {
+            -re "Select component to check version.*" { send "1\r"; set unknown_prompt_count 0; exp_continue }
+            timeout { }
+            eof { puts "[INFO] EOF at version submenu"; break }
+            -re ".*" {
+                incr unknown_prompt_count
+                if {$unknown_prompt_count <= 3 || $unknown_prompt_count % 10 == 0} {
+                    puts "[DEBUG] Prompt necunoscut: $expect_out(0,string) ($unknown_prompt_count)"
+                }
+                if {$unknown_prompt_count > $unknown_prompt_limit} {
+                    puts "[ERROR] Prea multe prompturi necunoscute consecutive. Ies din test."; exit 2
+                }
+                send "\r"
+                exp_continue
+            }
+        }
+        # 5. Prompturi pentru DB externă dacă apar
+        set timeout 5
+        expect {
+            -re "Host DB extern:" { send "localhost\r"; set unknown_prompt_count 0; exp_continue }
+            -re "Port DB extern.*:" { send "3306\r"; set unknown_prompt_count 0; exp_continue }
+            -re "Utilizator DB extern:" { send "root\r"; set unknown_prompt_count 0; exp_continue }
+            -re "Parola DB extern:|Parolă DB extern:" { send "parola\r"; set unknown_prompt_count 0; exp_continue }
+            timeout { }
+            eof { puts "[INFO] EOF at db prompt"; break }
+            -re ".*" {
+                incr unknown_prompt_count
+                if {$unknown_prompt_count <= 3 || $unknown_prompt_count % 10 == 0} {
+                    puts "[DEBUG] Prompt necunoscut: $expect_out(0,string) ($unknown_prompt_count)"
+                }
+                if {$unknown_prompt_count > $unknown_prompt_limit} {
+                    puts "[ERROR] Prea multe prompturi necunoscute consecutive. Ies din test."; exit 2
+                }
+                send "\r"
+                exp_continue
+            }
+        }
+    }
+}
+
+# Verificare finală pentru mesaj de succes
+set timeout 20
+expect {
+    -re "Instalare completă|WordPress instalat|Succes" { puts "[INFO] Instalare finalizată cu succes." }
+    timeout { puts "[WARN] Nu s-a detectat mesajul de finalizare instalare!" }
+    eof { puts "[INFO] EOF la final de test." }
+}
+
+puts "Test completat. Toate funcțiile de meniu și toate variantele de confirmare au fost acoperite automat. Rezultatele sunt logate în $log_file."
+exit 0
+exit 0

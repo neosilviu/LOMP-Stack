@@ -1,0 +1,75 @@
+{
+  "dashboard_settings": {
+    "refresh_interval": 30,
+    "auto_refresh": true,
+    "theme": "dark",
+    "show_notifications": true
+  },
+  "monitoring": {
+    "enabled_modules": [
+      "multi_cloud",
+      "security",
+      "performance",
+      "costs",
+      "scaling"
+    ],
+    "alert_thresholds": {
+      "cpu_usage": 80,
+      "memory_usage": 85,
+      "disk_usage": 90,
+      "response_time": 2000
+    }
+  },
+  "enterprise_modules": {
+    "multi_cloud_orchestrator": {
+      "enabled": true,
+      "status": "active",
+      "last_check": null
+    },
+    "security_manager": {
+      "enabled": false,
+      "status": "pending",
+      "last_check": null
+    },
+    "api_management": {
+      "enabled": false,
+      "status": "pending",
+      "last_check": null
+    },
+    "multi_site_manager": {
+      "enabled": false,
+      "status": "pending",
+      "last_check": null
+    },
+    "analytics_engine": {
+      "enabled": false,
+      "status": "pending",
+      "last_check": null
+    },
+    "auto_scaling": {
+      "enabled": false,
+      "status": "pending",
+      "last_check": null
+    },
+    "cdn_integration": {
+      "enabled": false,
+      "status": "pending",
+      "last_check": null
+    },
+    "wordpress_advanced": {
+      "enabled": false,
+      "status": "pending",
+      "last_check": null
+    },
+    "migration_tools": {
+      "enabled": false,
+      "status": "pending",
+      "last_check": null
+    },
+    "monitoring_suite": {
+      "enabled": false,
+      "status": "pending",
+      "last_check": null
+    }
+  }
+}

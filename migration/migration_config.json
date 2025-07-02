@@ -1,0 +1,70 @@
+{
+  "migration_tools": {
+    "version": "2.0.0",
+    "enabled": true,
+    "default_strategy": "blue_green",
+    "rollback_enabled": true,
+    "testing_enabled": true
+  },
+  "deployment": {
+    "strategies": {
+      "blue_green": {
+        "enabled": true,
+        "health_check_timeout": 300,
+        "warm_up_time": 60,
+        "rollback_threshold": 5
+      },
+      "rolling": {
+        "enabled": true,
+        "batch_size": 2,
+        "wait_between_batches": 30
+      },
+      "canary": {
+        "enabled": true,
+        "traffic_percentage": 10,
+        "monitoring_duration": 600
+      }
+    },
+    "environments": {
+      "staging": {
+        "url": "staging.example.com",
+        "database": "staging_db",
+        "web_root": "/var/www/staging"
+      },
+      "production": {
+        "url": "example.com",
+        "database": "production_db",
+        "web_root": "/var/www/html"
+      }
+    }
+  },
+  "migration": {
+    "source_validation": true,
+    "destination_preparation": true,
+    "data_integrity_checks": true,
+    "performance_testing": true,
+    "dns_management": true,
+    "ssl_migration": true
+  },
+  "backup": {
+    "pre_migration_backup": true,
+    "incremental_backups": true,
+    "retention_days": 30,
+    "compression": true,
+    "encryption": false
+  },
+  "testing": {
+    "automated_tests": true,
+    "performance_tests": true,
+    "security_tests": true,
+    "user_acceptance_tests": false,
+    "load_testing": true
+  },
+  "notifications": {
+    "email_enabled": false,
+    "webhook_enabled": false,
+    "slack_enabled": false,
+    "success_notifications": true,
+    "error_notifications": true
+  }
+}

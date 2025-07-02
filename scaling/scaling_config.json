@@ -1,0 +1,44 @@
+{
+  "scaling_settings": {
+    "enabled": true,
+    "min_instances": 1,
+    "max_instances": 10,
+    "desired_instances": 2,
+    "scale_up_threshold": 80,
+    "scale_down_threshold": 30,
+    "scale_up_period": 300,
+    "scale_down_period": 600
+  },
+  "metrics": {
+    "cpu_threshold": 75,
+    "memory_threshold": 80,
+    "disk_threshold": 85,
+    "response_time_threshold": 2000,
+    "request_rate_threshold": 1000
+  },
+  "load_balancer": {
+    "enabled": true,
+    "algorithm": "round_robin",
+    "health_check_interval": 30,
+    "health_check_timeout": 5,
+    "health_check_retries": 3
+  },
+  "cloud_integration": {
+    "aws_enabled": false,
+    "digitalocean_enabled": false,
+    "azure_enabled": false,
+    "preferred_provider": "aws"
+  },
+  "cost_optimization": {
+    "enabled": true,
+    "max_hourly_cost": 10,
+    "max_daily_cost": 100,
+    "spot_instances": true,
+    "schedule_based_scaling": true
+  },
+  "notifications": {
+    "email_alerts": true,
+    "webhook_url": null,
+    "alert_on_scale_events": true
+  }
+}

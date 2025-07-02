@@ -1,0 +1,483 @@
+<!--
+LOMP Stack v3.0 Template
+Author: Silviu Ilie <neosilviu@gmail.com>
+Company: aemdPC
+Copyright © 2025 aemdPC. All rights reserved.
+-->
+{% extends "base.html" %}
+
+{% block title %}Monitoring{% endblock %}
+{% block page_title %}Monitoring{% endblock %}
+{% block subtitle %}Real-time system monitoring and analytics{% endblock %}
+
+{% block content %}
+<!-- Real-time Stats -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">CPU Usage</h6>
+                    <h3 class="mb-0" id="cpu-usage">{{ stats.cpu_usage or '0%' }}</h3>
+                </div>
+                <i class="fas fa-microchip fa-2x opacity-75"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">Memory Usage</h6>
+                    <h3 class="mb-0" id="memory-usage">{{ stats.memory_usage or '0%' }}</h3>
+                </div>
+                <i class="fas fa-memory fa-2x opacity-75"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #00b894 0%, #00a085 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">Disk Usage</h6>
+                    <h3 class="mb-0" id="disk-usage">{{ stats.disk_usage or '0%' }}</h3>
+                </div>
+                <i class="fas fa-hdd fa-2x opacity-75"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">API Requests</h6>
+                    <h3 class="mb-0">{{ stats.total_requests_today or 0 }}</h3>
+                </div>
+                <i class="fas fa-exchange-alt fa-2x opacity-75"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Performance Charts -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-chart-line me-2"></i>
+                    Performance Metrics
+                </h5>
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-tachometer-alt me-2"></i>
+                    Live Metrics
+                </h5>
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span>Response Time</span>
+                    <span class="badge bg-primary" id="response-time">45ms</span>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span>Throughput</span>
+                    <span class="badge bg-success" id="throughput">250 req/s</span>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span>Error Rate</span>
+                    <span class="badge bg-warning" id="error-rate">0.1%</span>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>Uptime</span>
+                    <span class="badge bg-info" id="uptime">{{ stats.uptime or '0 min' }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- API Usage Analytics -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-chart-pie me-2"></i>
+                    API Endpoint Usage
+                </h5>
+                <div class="chart-container" style="height: 250px;">
+                    <canvas id="endpointChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-users me-2"></i>
+                    Top API Consumers
+                </h5>
+                
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item border-0 px-0">
+                        <div class="d-flex justify-content-between">
+                            <span>Monitoring Service</span>
+                            <span class="badge bg-primary">1,245 requests</span>
+                        </div>
+                        <small class="text-muted">API Key: monitoring-key-001</small>
+                    </div>
+                    
+                    <div class="list-group-item border-0 px-0">
+                        <div class="d-flex justify-content-between">
+                            <span>Admin Dashboard</span>
+                            <span class="badge bg-secondary">892 requests</span>
+                        </div>
+                        <small class="text-muted">API Key: admin-key-001</small>
+                    </div>
+                    
+                    <div class="list-group-item border-0 px-0">
+                        <div class="d-flex justify-content-between">
+                            <span>Mobile App</span>
+                            <span class="badge bg-info">654 requests</span>
+                        </div>
+                        <small class="text-muted">API Key: mobile-app-001</small>
+                    </div>
+                    
+                    <div class="list-group-item border-0 px-0">
+                        <div class="d-flex justify-content-between">
+                            <span>Backup Service</span>
+                            <span class="badge bg-success">321 requests</span>
+                        </div>
+                        <small class="text-muted">API Key: backup-service-001</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Status and Alerts -->
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-server me-2"></i>
+                    System Status
+                </h5>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Services</h6>
+                        
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-circle status-online me-2"></i>
+                            <span class="flex-grow-1">API Server</span>
+                            <span class="badge bg-success">Running</span>
+                        </div>
+                        
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-circle status-online me-2"></i>
+                            <span class="flex-grow-1">Database</span>
+                            <span class="badge bg-success">Connected</span>
+                        </div>
+                        
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-circle status-warning me-2"></i>
+                            <span class="flex-grow-1">Cache</span>
+                            <span class="badge bg-warning">Limited</span>
+                        </div>
+                        
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-circle status-online me-2"></i>
+                            <span class="flex-grow-1">Authentication</span>
+                            <span class="badge bg-success">Active</span>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Security</h6>
+                        
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-circle status-online me-2"></i>
+                            <span class="flex-grow-1">Rate Limiting</span>
+                            <span class="badge bg-success">Enabled</span>
+                        </div>
+                        
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-circle status-warning me-2"></i>
+                            <span class="flex-grow-1">SSL Certificate</span>
+                            <span class="badge bg-warning">Self-Signed</span>
+                        </div>
+                        
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-circle status-online me-2"></i>
+                            <span class="flex-grow-1">Firewall</span>
+                            <span class="badge bg-success">Active</span>
+                        </div>
+                        
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-circle status-offline me-2"></i>
+                            <span class="flex-grow-1">Intrusion Detection</span>
+                            <span class="badge bg-danger">Disabled</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Recent Alerts
+                </h5>
+                
+                <div class="alert alert-warning alert-sm">
+                    <i class="fas fa-clock me-2"></i>
+                    <strong>High Memory Usage</strong><br>
+                    <small>Memory usage above 80% threshold</small><br>
+                    <small class="text-muted">5 minutes ago</small>
+                </div>
+                
+                <div class="alert alert-info alert-sm">
+                    <i class="fas fa-key me-2"></i>
+                    <strong>New API Key Created</strong><br>
+                    <small>API key created for monitoring service</small><br>
+                    <small class="text-muted">15 minutes ago</small>
+                </div>
+                
+                <div class="alert alert-success alert-sm">
+                    <i class="fas fa-check me-2"></i>
+                    <strong>System Update Complete</strong><br>
+                    <small>All components updated successfully</small><br>
+                    <small class="text-muted">1 hour ago</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Performance Chart
+const ctx = document.getElementById('performanceChart').getContext('2d');
+const performanceChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['1min', '2min', '3min', '4min', '5min', '6min', '7min', '8min', '9min', '10min'],
+        datasets: [{
+            label: 'CPU Usage (%)',
+            data: [15, 20, 18, 25, 22, 19, 23, 21, 17, 20],
+            borderColor: '#667eea',
+            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+            tension: 0.4,
+            fill: true
+        }, {
+            label: 'Memory Usage (%)',
+            data: [40, 42, 45, 43, 48, 46, 44, 47, 45, 46],
+            borderColor: '#fdcb6e',
+            backgroundColor: 'rgba(253, 203, 110, 0.1)',
+            tension: 0.4,
+            fill: true
+        }, {
+            label: 'Disk Usage (%)',
+            data: [23, 23, 24, 24, 24, 25, 25, 25, 26, 26],
+            borderColor: '#00b894',
+            backgroundColor: 'rgba(0, 184, 148, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+            intersect: false,
+            mode: 'index'
+        },
+        animation: {
+            duration: 750,
+            easing: 'easeInOutQuart'
+        },
+        elements: {
+            point: {
+                radius: 4,
+                hoverRadius: 6
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 100,
+                grid: {
+                    color: 'rgba(0, 0, 0, 0.1)'
+                },
+                ticks: {
+                    callback: function(value) {
+                        return value + '%';
+                    }
+                }
+            },
+            x: {
+                grid: {
+                    color: 'rgba(0, 0, 0, 0.1)'
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                position: 'top',
+                labels: {
+                    usePointStyle: true,
+                    padding: 20
+                }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                titleColor: '#fff',
+                bodyColor: '#fff',
+                borderColor: '#ddd',
+                borderWidth: 1
+            }
+        }
+    }
+});
+
+// Endpoint Usage Chart
+const endpointCtx = document.getElementById('endpointChart').getContext('2d');
+const endpointChart = new Chart(endpointCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['/api/v1/sites', '/api/v1/backups', '/api/v1/system/status', '/api/v1/health', 'Others'],
+        datasets: [{
+            data: [35, 25, 20, 15, 5],
+            backgroundColor: [
+                '#667eea',
+                '#fdcb6e',
+                '#00b894',
+                '#a29bfe',
+                '#fd79a8'
+            ],
+            borderWidth: 2,
+            borderColor: '#fff'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '60%',
+        elements: {
+            arc: {
+                borderWidth: 2
+            }
+        },
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    usePointStyle: true,
+                    padding: 15,
+                    font: {
+                        size: 12
+                    }
+                }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                titleColor: '#fff',
+                bodyColor: '#fff',
+                borderColor: '#ddd',
+                borderWidth: 1,
+                callbacks: {
+                    label: function(context) {
+                        return context.label + ': ' + context.parsed + '%';
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Auto-refresh data every 10 seconds
+setInterval(function() {
+    refreshMonitoringData();
+    updateCharts();
+}, 10000);
+
+function refreshMonitoringData() {
+    fetch('/api/stats')
+        .then(response => response.json())
+        .then(data => {
+            // Update real-time metrics
+            document.getElementById('cpu-usage').textContent = data.cpu_usage || '0%';
+            document.getElementById('memory-usage').textContent = data.memory_usage || '0%';
+            document.getElementById('disk-usage').textContent = data.disk_usage || '0%';
+            
+            // Update response time (simulate)
+            const responseTime = Math.floor(Math.random() * 50) + 30;
+            document.getElementById('response-time').textContent = responseTime + 'ms';
+            
+            // Update throughput (simulate)
+            const throughput = Math.floor(Math.random() * 100) + 200;
+            document.getElementById('throughput').textContent = throughput + ' req/s';
+            
+            // Update error rate (simulate)
+            const errorRate = (Math.random() * 0.5).toFixed(1);
+            document.getElementById('error-rate').textContent = errorRate + '%';
+        })
+        .catch(error => console.error('Error refreshing monitoring data:', error));
+}
+
+function updateCharts() {
+    // Update performance chart with new data (simulate)
+    const newCpuValue = Math.floor(Math.random() * 30) + 10;
+    const newMemoryValue = Math.floor(Math.random() * 20) + 40;
+    const newDiskValue = Math.floor(Math.random() * 5) + 23;
+    
+    // Update current time label
+    const now = new Date();
+    const timeLabel = now.getHours().toString().padStart(2, '0') + ':' + 
+                      now.getMinutes().toString().padStart(2, '0');
+    
+    // Remove first element and add new one (keep only last 10 data points)
+    if (performanceChart.data.labels.length >= 10) {
+        performanceChart.data.labels.shift();
+        performanceChart.data.datasets[0].data.shift();
+        performanceChart.data.datasets[1].data.shift();
+        performanceChart.data.datasets[2].data.shift();
+    }
+    
+    // Add new data points
+    performanceChart.data.labels.push(timeLabel);
+    performanceChart.data.datasets[0].data.push(newCpuValue);
+    performanceChart.data.datasets[1].data.push(newMemoryValue);
+    performanceChart.data.datasets[2].data.push(newDiskValue);
+    
+    // Update chart with animation disabled for better performance
+    performanceChart.update('none');
+}
+
+// Initialize with first data refresh
+refreshMonitoringData();
+</script>
+{% endblock %}

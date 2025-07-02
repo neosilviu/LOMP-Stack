@@ -1,0 +1,34 @@
+{
+  "timestamp": "2025-07-01T22:04:53+03:00",
+  "global_performance": {
+    "avg_response_time": 125,
+    "cache_hit_ratio": 0.91,
+    "uptime_percentage": 99.95,
+    "data_transferred_gb": 1250.5,
+    "requests_served": 2500000
+  },
+  "provider_metrics": {
+    "cloudflare": {
+      "response_time": 89,
+      "uptime": 99.98,
+      "cache_hit_ratio": 0.95,
+      "bandwidth_gb": 750.2,
+      "requests": 1500000
+    },
+    "aws_cloudfront": {
+      "response_time": 145,
+      "uptime": 99.92,
+      "cache_hit_ratio": 0.88,
+      "bandwidth_gb": 375.1,
+      "requests": 750000
+    },
+    "azure_cdn": {
+      "response_time": 178,
+      "uptime": 99.9,
+      "cache_hit_ratio": 0.82,
+      "bandwidth_gb": 125.2,
+      "requests": 250000
+    }
+  },
+  "alerts": []
+}

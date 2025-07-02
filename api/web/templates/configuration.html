@@ -1,0 +1,433 @@
+<!--
+LOMP Stack v3.0 Template
+Author: Silviu Ilie <neosilviu@gmail.com>
+Company: aemdPC
+Copyright © 2025 aemdPC. All rights reserved.
+-->
+{% extends "base.html" %}
+
+{% block title %}Configuration{% endblock %}
+{% block page_title %}Configuration{% endblock %}
+{% block subtitle %}System settings and API configuration{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-cog me-2"></i>
+                    API Configuration
+                </h5>
+                
+                <form id="configForm">
+                    <!-- Basic Settings -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="apiHost" class="form-label">API Host</label>
+                            <input type="text" class="form-control" id="apiHost" 
+                                   value="{{ config.api.host if config.api else 'localhost' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="apiPort" class="form-label">API Port</label>
+                            <input type="number" class="form-control" id="apiPort" 
+                                   value="{{ config.api.port if config.api else 8080 }}">
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="basePath" class="form-label">Base Path</label>
+                            <input type="text" class="form-control" id="basePath" 
+                                   value="{{ config.api.base_path if config.api else '/api/v1' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="apiVersion" class="form-label">API Version</label>
+                            <input type="text" class="form-control" id="apiVersion" 
+                                   value="{{ config.api.version if config.api else '1.0.0' }}" readonly>
+                        </div>
+                    </div>
+                    
+                    <!-- Security Settings -->
+                    <h6 class="mb-3">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        Security Settings
+                    </h6>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="sslEnabled"
+                                       {{ 'checked' if config.api and config.api.ssl_enabled else '' }}>
+                                <label class="form-check-label" for="sslEnabled">
+                                    Enable SSL/TLS
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="corsEnabled"
+                                       {{ 'checked' if config.api and config.api.cors_enabled else '' }}>
+                                <label class="form-check-label" for="corsEnabled">
+                                    Enable CORS
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Rate Limiting -->
+                    <h6 class="mb-3">
+                        <i class="fas fa-tachometer-alt me-2"></i>
+                        Rate Limiting
+                    </h6>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="rateLimitEnabled"
+                                       {{ 'checked' if config.api and config.api.rate_limiting and config.api.rate_limiting.enabled else '' }}>
+                                <label class="form-check-label" for="rateLimitEnabled">
+                                    Enable Rate Limiting
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="requestsPerMinute" class="form-label">Requests per Minute</label>
+                            <input type="number" class="form-control" id="requestsPerMinute" 
+                                   value="{{ config.api.rate_limiting.requests_per_minute if config.api and config.api.rate_limiting else 100 }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="burstLimit" class="form-label">Burst Limit</label>
+                            <input type="number" class="form-control" id="burstLimit" 
+                                   value="{{ config.api.rate_limiting.burst_limit if config.api and config.api.rate_limiting else 20 }}">
+                        </div>
+                    </div>
+                    
+                    <!-- Authentication -->
+                    <h6 class="mb-3">
+                        <i class="fas fa-key me-2"></i>
+                        Authentication
+                    </h6>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="jwtEnabled"
+                                       {{ 'checked' if config.api and config.api.authentication and config.api.authentication.jwt_enabled else '' }}>
+                                <label class="form-check-label" for="jwtEnabled">
+                                    Enable JWT
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="apiKeyEnabled"
+                                       {{ 'checked' if config.api and config.api.authentication and config.api.authentication.api_key_enabled else '' }}>
+                                <label class="form-check-label" for="apiKeyEnabled">
+                                    Enable API Keys
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="sessionTimeout" class="form-label">Session Timeout (seconds)</label>
+                            <input type="number" class="form-control" id="sessionTimeout" 
+                                   value="{{ config.api.authentication.session_timeout if config.api and config.api.authentication else 3600 }}">
+                        </div>
+                    </div>
+                    
+                    <!-- Logging -->
+                    <h6 class="mb-3">
+                        <i class="fas fa-file-alt me-2"></i>
+                        Logging
+                    </h6>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <label for="logLevel" class="form-label">Log Level</label>
+                            <select class="form-select" id="logLevel">
+                                <option value="debug" {{ 'selected' if config.api and config.api.logging and config.api.logging.level == 'debug' else '' }}>Debug</option>
+                                <option value="info" {{ 'selected' if config.api and config.api.logging and config.api.logging.level == 'info' else '' }}>Info</option>
+                                <option value="warning" {{ 'selected' if config.api and config.api.logging and config.api.logging.level == 'warning' else '' }}>Warning</option>
+                                <option value="error" {{ 'selected' if config.api and config.api.logging and config.api.logging.level == 'error' else '' }}>Error</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="accessLog"
+                                       {{ 'checked' if config.api and config.api.logging and config.api.logging.access_log else '' }}>
+                                <label class="form-check-label" for="accessLog">
+                                    Access Log
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="errorLog"
+                                       {{ 'checked' if config.api and config.api.logging and config.api.logging.error_log else '' }}>
+                                <label class="form-check-label" for="errorLog">
+                                    Error Log
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary me-2" onclick="resetConfig()">
+                            <i class="fas fa-undo me-2"></i>
+                            Reset
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="saveConfig()">
+                            <i class="fas fa-save me-2"></i>
+                            Save Configuration
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Configuration Status -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Configuration Status
+                </h5>
+                
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fas fa-circle status-online me-2"></i>
+                    <span>API Server</span>
+                    <span class="badge bg-success ms-auto">Running</span>
+                </div>
+                
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fas fa-circle status-warning me-2"></i>
+                    <span>SSL/TLS</span>
+                    <span class="badge bg-warning ms-auto">Disabled</span>
+                </div>
+                
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fas fa-circle status-online me-2"></i>
+                    <span>Rate Limiting</span>
+                    <span class="badge bg-success ms-auto">Enabled</span>
+                </div>
+                
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-circle status-online me-2"></i>
+                    <span>Authentication</span>
+                    <span class="badge bg-success ms-auto">Active</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Configuration Backup -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-download me-2"></i>
+                    Configuration Backup
+                </h5>
+                
+                <p class="text-muted small">
+                    Download or restore configuration backups.
+                </p>
+                
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="downloadConfig()">
+                        <i class="fas fa-download me-2"></i>
+                        Download Config
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="uploadConfig()">
+                        <i class="fas fa-upload me-2"></i>
+                        Upload Config
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- API Endpoints -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-link me-2"></i>
+                    API Endpoints
+                </h5>
+                
+                <div class="list-group list-group-flush">
+                    {% if config.endpoints %}
+                        {% for endpoint, settings in config.endpoints.items() %}
+                        <div class="list-group-item border-0 px-0 py-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-capitalize">{{ endpoint }}</span>
+                                {% if settings.enabled %}
+                                    <span class="badge bg-success">Enabled</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Disabled</span>
+                                {% endif %}
+                            </div>
+                            <small class="text-muted">
+                                Rate: {{ settings.rate_limit or 'N/A' }}/min
+                                {% if settings.auth_required %}
+                                    | Auth Required
+                                {% endif %}
+                            </small>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="list-group-item border-0 px-0">
+                            <small class="text-muted">No endpoints configured</small>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden file input for config upload -->
+<input type="file" id="configFileInput" accept=".json" style="display: none;" onchange="handleConfigUpload(this)">
+{% endblock %}
+
+{% block scripts %}
+<script>
+function saveConfig() {
+    const config = {
+        api: {
+            version: document.getElementById('apiVersion').value,
+            host: document.getElementById('apiHost').value,
+            port: parseInt(document.getElementById('apiPort').value),
+            base_path: document.getElementById('basePath').value,
+            ssl_enabled: document.getElementById('sslEnabled').checked,
+            cors_enabled: document.getElementById('corsEnabled').checked,
+            rate_limiting: {
+                enabled: document.getElementById('rateLimitEnabled').checked,
+                requests_per_minute: parseInt(document.getElementById('requestsPerMinute').value),
+                burst_limit: parseInt(document.getElementById('burstLimit').value)
+            },
+            authentication: {
+                jwt_enabled: document.getElementById('jwtEnabled').checked,
+                api_key_enabled: document.getElementById('apiKeyEnabled').checked,
+                session_timeout: parseInt(document.getElementById('sessionTimeout').value)
+            },
+            logging: {
+                level: document.getElementById('logLevel').value,
+                access_log: document.getElementById('accessLog').checked,
+                error_log: document.getElementById('errorLog').checked
+            }
+        }
+    };
+    
+    fetch('/api/update-config', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(config)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Configuration saved successfully!', 'success');
+        } else {
+            showNotification('Error saving configuration: ' + data.error, 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Error saving configuration', 'danger');
+    });
+}
+
+function resetConfig() {
+    if (confirm('Are you sure you want to reset to default configuration?')) {
+        location.reload();
+    }
+}
+
+function downloadConfig() {
+    // Get current configuration data
+    const configData = {{ config | tojson | safe }};
+    const blob = new Blob([JSON.stringify(configData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'api_config_' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    showNotification('Configuration downloaded successfully!', 'success');
+}
+
+function uploadConfig() {
+    document.getElementById('configFileInput').click();
+}
+
+function handleConfigUpload(input) {
+    const file = input.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const config = JSON.parse(e.target.result);
+                if (confirm('This will overwrite current configuration. Continue?')) {
+                    // Update form fields with uploaded config
+                    if (config.api) {
+                        document.getElementById('apiHost').value = config.api.host || 'localhost';
+                        document.getElementById('apiPort').value = config.api.port || 8080;
+                        document.getElementById('basePath').value = config.api.base_path || '/api/v1';
+                        document.getElementById('sslEnabled').checked = config.api.ssl_enabled || false;
+                        document.getElementById('corsEnabled').checked = config.api.cors_enabled || false;
+                        
+                        if (config.api.rate_limiting) {
+                            document.getElementById('rateLimitEnabled').checked = config.api.rate_limiting.enabled || false;
+                            document.getElementById('requestsPerMinute').value = config.api.rate_limiting.requests_per_minute || 100;
+                            document.getElementById('burstLimit').value = config.api.rate_limiting.burst_limit || 20;
+                        }
+                        
+                        if (config.api.authentication) {
+                            document.getElementById('jwtEnabled').checked = config.api.authentication.jwt_enabled || false;
+                            document.getElementById('apiKeyEnabled').checked = config.api.authentication.api_key_enabled || false;
+                            document.getElementById('sessionTimeout').value = config.api.authentication.session_timeout || 3600;
+                        }
+                        
+                        if (config.api.logging) {
+                            document.getElementById('logLevel').value = config.api.logging.level || 'info';
+                            document.getElementById('accessLog').checked = config.api.logging.access_log || false;
+                            document.getElementById('errorLog').checked = config.api.logging.error_log || false;
+                        }
+                    }
+                    showNotification('Configuration loaded successfully! Click Save to apply.', 'success');
+                }
+            } catch (error) {
+                showNotification('Error parsing configuration file: ' + error.message, 'danger');
+            }
+        };
+        reader.readAsText(file);
+    }
+}
+
+// Utility function for notifications
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}

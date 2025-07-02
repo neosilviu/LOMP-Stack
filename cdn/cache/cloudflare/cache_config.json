@@ -1,0 +1,7 @@
+{
+        "cache_level": "aggressive",
+        "browser_cache_ttl": 14400,
+        "edge_cache_ttl": 3600,
+        "always_online": "on",
+        "development_mode": "off"
+    }

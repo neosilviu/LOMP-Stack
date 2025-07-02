@@ -1,0 +1,15 @@
+{
+  "timestamp": "2025-07-01T22:04:43+03:00",
+  "timeframe": "24h",
+  "summary": {
+    "total_requests": 1250,
+    "unique_visitors": 320,
+    "success_rate_percent": 98.5,
+    "error_404_count": 15,
+    "error_500_count": 3
+  },
+  "top_pages": [],
+  "user_agents": [],
+  "geographic_data": [],
+  "referrers": []
+}

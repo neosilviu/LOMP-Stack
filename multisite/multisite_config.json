@@ -1,0 +1,80 @@
+{
+    "multisite": {
+        "enabled": true,
+        "network_title": "LOMP Multi-Site Network",
+        "admin_email": "admin@example.com",
+        "subdomain_install": true,
+        "domain_current_site": "localhost",
+        "path_current_site": "/",
+        "site_id_current_site": 1,
+        "blog_id_current_site": 1
+    },
+    "sites": {
+        "max_sites": 100,
+        "auto_approve": false,
+        "registration": "user",
+        "default_theme": "twentytwentythree",
+        "allowed_themes": [
+            "twentytwentythree",
+            "twentytwentytwo",
+            "twentytwentyone"
+        ]
+    },
+    "management": {
+        "bulk_operations": {
+            "enabled": true,
+            "batch_size": 10,
+            "timeout": 300
+        },
+        "templates": {
+            "enabled": true,
+            "default_template": "basic",
+            "custom_templates": []
+        },
+        "cloning": {
+            "enabled": true,
+            "preserve_content": true,
+            "preserve_users": false,
+            "preserve_settings": true
+        }
+    },
+    "performance": {
+        "caching": {
+            "enabled": true,
+            "cache_type": "object",
+            "cache_timeout": 3600
+        },
+        "optimization": {
+            "compress_css": true,
+            "compress_js": true,
+            "optimize_images": true,
+            "lazy_loading": true
+        }
+    },
+    "analytics": {
+        "enabled": true,
+        "track_individual_sites": true,
+        "aggregate_reporting": true,
+        "retention_days": 90
+    },
+    "backup": {
+        "enabled": true,
+        "schedule": "daily",
+        "retention_days": 30,
+        "include_uploads": true,
+        "include_database": true
+    },
+    "security": {
+        "enforce_ssl": true,
+        "login_protection": true,
+        "file_permissions": "0644",
+        "disable_file_editing": true,
+        "limit_login_attempts": 5
+    },
+    "notifications": {
+        "new_site_admin": true,
+        "new_site_super_admin": true,
+        "site_updates": true,
+        "security_alerts": true
+    }
+}

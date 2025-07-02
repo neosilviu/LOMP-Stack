@@ -1,0 +1,338 @@
+<!-- 
+LOMP Stack v3.0 - Updates Management Template
+Author: Silviu Ilie <neosilviu@gmail.com>
+Company: aemdPC
+Copyright © 2025 aemdPC. All rights reserved.
+-->
+{% extends "base.html" %}
+
+{% block title %}System Updates - LOMP Stack v3.0{% endblock %}
+{% block page_title %}System Updates{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2><i class="fas fa-download me-3"></i>System Updates</h2>
+                    <p class="text-muted">Manage and apply system updates for LOMP Stack</p>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="checkForUpdates()">
+                    <i class="fas fa-sync-alt"></i> Check for Updates
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Status Card -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Current Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="status-item mb-3">
+                                <label class="fw-bold">Current Version:</label>
+                                <span class="badge bg-primary ms-2">v{{ update_status.current_version }}</span>
+                            </div>
+                            
+                            {% if update_status.update_available %}
+                            <div class="status-item mb-3">
+                                <label class="fw-bold">Latest Version:</label>
+                                <span class="badge bg-success ms-2">v{{ update_status.latest_version }}</span>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="status-item">
+                                <label class="fw-bold">Last Checked:</label>
+                                <span class="text-muted ms-2">
+                                    {% if update_status.last_checked %}
+                                        {{ update_status.last_checked }}
+                                    {% else %}
+                                        Never
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            {% if update_status.update_available %}
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-exclamation-circle"></i> Update Available!</h6>
+                                <p class="mb-2">A new version (v{{ update_status.latest_version }}) is available.</p>
+                                <button type="button" class="btn btn-success btn-sm" onclick="performUpdate()" id="updateBtn">
+                                    <i class="fas fa-download"></i> Install Update
+                                </button>
+                                {% if update_status.release_url %}
+                                <a href="{{ update_status.release_url }}" target="_blank" class="btn btn-outline-info btn-sm ms-2">
+                                    <i class="fas fa-external-link-alt"></i> View Release
+                                </a>
+                                {% endif %}
+                            </div>
+                            {% else %}
+                            <div class="alert alert-success">
+                                <h6><i class="fas fa-check-circle"></i> Up to Date</h6>
+                                <p class="mb-0">You are running the latest version of LOMP Stack.</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Update Settings Card -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-cog me-2"></i>Update Settings</h5>
+                </div>
+                <div class="card-body">
+                    <form id="updateSettingsForm">
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="autoCheckEnabled" 
+                                       {% if update_config.auto_check_enabled %}checked{% endif %}>
+                                <label class="form-check-label" for="autoCheckEnabled">
+                                    Automatic Update Checks
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="notifyUsers" 
+                                       {% if update_config.notify_users %}checked{% endif %}>
+                                <label class="form-check-label" for="notifyUsers">
+                                    Notify About Updates
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="checkInterval" class="form-label">Check Interval (hours):</label>
+                            <select class="form-select" id="checkInterval">
+                                <option value="1" {% if update_config.check_interval_hours == 1 %}selected{% endif %}>1 hour</option>
+                                <option value="6" {% if update_config.check_interval_hours == 6 %}selected{% endif %}>6 hours</option>
+                                <option value="12" {% if update_config.check_interval_hours == 12 %}selected{% endif %}>12 hours</option>
+                                <option value="24" {% if update_config.check_interval_hours == 24 %}selected{% endif %}>24 hours</option>
+                                <option value="48" {% if update_config.check_interval_hours == 48 %}selected{% endif %}>48 hours</option>
+                                <option value="168" {% if update_config.check_interval_hours == 168 %}selected{% endif %}>1 week</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="fas fa-save"></i> Save Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Release Notes Card (if update available) -->
+    {% if update_status.update_available and update_status.release_notes %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i>Release Notes - v{{ update_status.latest_version }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="release-notes">
+                        {{ update_status.release_notes | safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Update Progress Modal -->
+<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateModalLabel">System Update in Progress</h5>
+            </div>
+            <div class="modal-body">
+                <div class="text-center">
+                    <div class="spinner-border text-primary mb-3" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p>Please wait while the system is being updated...</p>
+                    <p class="text-muted small">This process may take several minutes. Do not close this window.</p>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                         role="progressbar" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.status-item {
+    border-left: 3px solid #e9ecef;
+    padding-left: 15px;
+}
+
+.release-notes {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    white-space: pre-wrap;
+}
+
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border: none;
+    border-radius: 10px;
+}
+
+.alert {
+    border-radius: 8px;
+}
+</style>
+
+<script>
+// Notification system
+function showNotification(message, type = 'info') {
+    const alertsContainer = document.getElementById('alerts-container') || 
+                           (() => {
+                               const container = document.createElement('div');
+                               container.id = 'alerts-container';
+                               container.style.position = 'fixed';
+                               container.style.top = '20px';
+                               container.style.right = '20px';
+                               container.style.zIndex = '9999';
+                               container.style.minWidth = '300px';
+                               document.body.appendChild(container);
+                               return container;
+                           })();
+
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.style.marginBottom = '10px';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+
+    alertsContainer.appendChild(alertDiv);
+
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+
+function checkForUpdates() {
+    const btn = document.querySelector('button[onclick="checkForUpdates()"]');
+    const originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+    
+    fetch('/api/check-updates', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Reload page to show updated status
+            window.location.reload();
+        } else {
+            showNotification('Error checking for updates: ' + data.error, 'danger');
+        }
+    })
+    .catch(error => {
+        showNotification('Error checking for updates: ' + error, 'danger');
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    });
+}
+
+function performUpdate() {
+    if (!confirm('Are you sure you want to update the system? This will temporarily interrupt service.')) {
+        return;
+    }
+    
+    // Show progress modal
+    const modal = new bootstrap.Modal(document.getElementById('updateModal'));
+    modal.show();
+    
+    // Disable update button
+    document.getElementById('updateBtn').disabled = true;
+    
+    fetch('/api/perform-update', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        modal.hide();
+        
+        if (data.success) {
+            showNotification('Update completed successfully! The page will reload.', 'success');
+            window.location.reload();
+        } else {
+            showNotification('Update failed: ' + data.error, 'danger');
+            document.getElementById('updateBtn').disabled = false;
+        }
+    })
+    .catch(error => {
+        modal.hide();
+        showNotification('Update failed: ' + error, 'danger');
+        document.getElementById('updateBtn').disabled = false;
+    });
+}
+
+// Update settings form handler
+document.getElementById('updateSettingsForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        auto_check_enabled: document.getElementById('autoCheckEnabled').checked,
+        notify_users: document.getElementById('notifyUsers').checked,
+        check_interval_hours: parseInt(document.getElementById('checkInterval').value)
+    };
+    
+    fetch('/api/update-settings', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Settings saved successfully!', 'success');
+        } else {
+            showNotification('Error saving settings: ' + data.error, 'danger');
+        }
+    })
+    .catch(error => {
+        showNotification('Error saving settings: ' + error, 'danger');
+    });
+});
+</script>
+{% endblock %}

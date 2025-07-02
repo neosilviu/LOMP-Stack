@@ -1,0 +1,42 @@
+{
+  "security_settings": {
+    "waf_enabled": true,
+    "ids_enabled": true,
+    "ddos_protection": true,
+    "auto_ssl": true,
+    "security_scanning": true,
+    "compliance_monitoring": true
+  },
+  "cloudflare_tunnel": {
+    "enabled": false,
+    "tunnel_name": "lomp-stack-tunnel",
+    "tunnel_id": null,
+    "credentials_file": null,
+    "config_file": null
+  },
+  "waf_rules": {
+    "sql_injection": true,
+    "xss_protection": true,
+    "rate_limiting": true,
+    "geo_blocking": false,
+    "custom_rules": []
+  },
+  "ids_settings": {
+    "monitor_failed_logins": true,
+    "monitor_file_changes": true,
+    "monitor_network_traffic": true,
+    "alert_threshold": 5,
+    "block_threshold": 10
+  },
+  "compliance": {
+    "gdpr_enabled": true,
+    "pci_dss_enabled": false,
+    "soc2_enabled": false,
+    "logging_retention_days": 90
+  },
+  "notifications": {
+    "email_alerts": true,
+    "slack_webhook": null,
+    "alert_levels": ["critical", "high", "medium"]
+  }
+}

@@ -1,0 +1,790 @@
+<!--
+LOMP Stack v3.0 Template
+Author: Silviu Ilie <neosilviu@gmail.com>
+Company: aemdPC
+Copyright © 2025 aemdPC. All rights reserved.
+-->
+{% extends "base.html" %}
+
+{% block title %}WordPress Management{% endblock %}
+{% block page_title %}WordPress Management{% endblock %}
+{% block subtitle %}Install, manage, and configure WordPress websites{% endblock %}
+
+{% block content %}
+<!-- WordPress Overview -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">WordPress Sites</h6>
+                    <h3 class="mb-0" id="total-wp-sites">{{ wp_sites|length }}</h3>
+                </div>
+                <i class="fab fa-wordpress fa-2x opacity-75"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #00b894 0%, #00a085 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">Active Sites</h6>
+                    <h3 class="mb-0" id="active-wp-sites">{{ wp_sites|selectattr('status', 'equalto', 'active')|list|length }}</h3>
+                </div>
+                <i class="fas fa-check-circle fa-2x opacity-75"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">Updates Available</h6>
+                    <h3 class="mb-0" id="updates-available">0</h3>
+                </div>
+                <i class="fas fa-download fa-2x opacity-75"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">SSL Enabled</h6>
+                    <h3 class="mb-0" id="ssl-enabled-wp">{{ wp_sites|selectattr('ssl_enabled', 'equalto', true)|list|length }}</h3>
+                </div>
+                <i class="fas fa-lock fa-2x opacity-75"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- WordPress Installation Panel -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="fab fa-wordpress me-2"></i>Install New WordPress Site
+        </h5>
+    </div>
+    <div class="card-body">
+        <form id="wp-install-form" class="row g-3">
+            <div class="col-md-4">
+                <label for="wp-domain" class="form-label">Domain</label>
+                <select class="form-select" id="wp-domain" required>
+                    <option value="">Select a domain...</option>
+                    {% for domain in available_domains %}
+                    <option value="{{ domain.domain_name }}">{{ domain.domain_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="wp-subdirectory" class="form-label">Subdirectory (optional)</label>
+                <input type="text" class="form-control" id="wp-subdirectory" 
+                       placeholder="e.g., blog, shop">
+                <div class="form-text">Leave empty to install at domain root</div>
+            </div>
+            <div class="col-md-4">
+                <label for="wp-version" class="form-label">WordPress Version</label>
+                <select class="form-select" id="wp-version">
+                    <option value="latest">Latest (Recommended)</option>
+                    <option value="6.4">WordPress 6.4</option>
+                    <option value="6.3">WordPress 6.3</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="wp-admin-user" class="form-label">Admin Username</label>
+                <input type="text" class="form-control" id="wp-admin-user" required>
+            </div>
+            <div class="col-md-6">
+                <label for="wp-admin-email" class="form-label">Admin Email</label>
+                <input type="email" class="form-control" id="wp-admin-email" required>
+            </div>
+            <div class="col-md-6">
+                <label for="wp-admin-password" class="form-label">Admin Password</label>
+                <input type="password" class="form-control" id="wp-admin-password" required>
+                <div class="form-text">Use a strong password</div>
+            </div>
+            <div class="col-md-6">
+                <label for="wp-site-title" class="form-label">Site Title</label>
+                <input type="text" class="form-control" id="wp-site-title" required>
+            </div>
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="wp-ssl-enable" checked>
+                            <label class="form-check-label" for="wp-ssl-enable">
+                                Enable SSL Certificate
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="wp-cloudflare">
+                            <label class="form-check-label" for="wp-cloudflare">
+                                Enable Cloudflare
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="wp-auto-update">
+                            <label class="form-check-label" for="wp-auto-update">
+                                Enable Auto Updates
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fab fa-wordpress me-1"></i>Install WordPress
+                </button>
+                <button type="button" class="btn btn-outline-secondary ms-2" onclick="clearForm()">
+                    Clear Form
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- WordPress Sites Management -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="fab fa-wordpress me-2"></i>WordPress Sites
+        </h5>
+        <div class="btn-group">
+            <button class="btn btn-outline-primary btn-sm" onclick="checkAllUpdates()">
+                <i class="fas fa-sync me-1"></i>Check Updates
+            </button>
+            <button class="btn btn-outline-success btn-sm" onclick="backupSelected()">
+                <i class="fas fa-save me-1"></i>Backup Selected
+            </button>
+        </div>
+    </div>
+    
+    <div class="card-body">
+        <!-- Search and Filters -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" id="wp-search" placeholder="Search WordPress sites...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="wp-status-filter">
+                    <option value="">All Sites</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="maintenance">Maintenance</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="wp-version-filter">
+                    <option value="">All Versions</option>
+                    <option value="6.4">WordPress 6.4</option>
+                    <option value="6.3">WordPress 6.3</option>
+                    <option value="6.2">WordPress 6.2</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Bulk Actions -->
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <div class="d-flex align-items-center">
+                    <div class="form-check me-3">
+                        <input class="form-check-input" type="checkbox" id="select-all-wp">
+                        <label class="form-check-label" for="select-all-wp">
+                            Select All
+                        </label>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-outline-primary btn-sm" onclick="updateSelectedWP()">
+                            <i class="fas fa-download me-1"></i>Update Selected
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm" onclick="maintenanceMode()">
+                            <i class="fas fa-tools me-1"></i>Maintenance Mode
+                        </button>
+                        <button class="btn btn-outline-success btn-sm" onclick="enableSSLSelected()">
+                            <i class="fas fa-lock me-1"></i>Enable SSL
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- WordPress Sites Table -->
+        <div class="table-responsive">
+            <table class="table table-hover" id="wp-sites-table">
+                <thead>
+                    <tr>
+                        <th width="3%">
+                            <input type="checkbox" id="select-all">
+                        </th>
+                        <th width="25%">Site</th>
+                        <th width="12%">Version</th>
+                        <th width="10%">Status</th>
+                        <th width="10%">SSL</th>
+                        <th width="15%">Last Update</th>
+                        <th width="10%">Backups</th>
+                        <th width="15%">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for site in wp_sites %}
+                    <tr data-site-id="{{ site.id }}">
+                        <td>
+                            <input type="checkbox" class="wp-checkbox" value="{{ site.id }}">
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <i class="fab fa-wordpress me-2 text-primary"></i>
+                                <div>
+                                    <strong>{{ site.domain_name }}</strong>
+                                    {% if site.subdirectory %}
+                                        <span class="text-muted">/{{ site.subdirectory }}</span>
+                                    {% endif %}
+                                    <br>
+                                    <small class="text-muted">{{ site.site_title }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-info">{{ site.wp_version }}</span>
+                            {% if site.update_available %}
+                                <br><small class="text-warning">Update available</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if site.status == 'active' %}
+                                <span class="badge bg-success">Active</span>
+                            {% elif site.status == 'inactive' %}
+                                <span class="badge bg-secondary">Inactive</span>
+                            {% elif site.status == 'maintenance' %}
+                                <span class="badge bg-warning">Maintenance</span>
+                            {% else %}
+                                <span class="badge bg-danger">{{ site.status|title }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if site.ssl_enabled %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-lock me-1"></i>Enabled
+                                </span>
+                            {% else %}
+                                <span class="badge bg-light text-dark">Disabled</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <small class="text-muted">
+                                {% if site.last_update %}
+                                    {{ site.last_update }}
+                                {% else %}
+                                    Never
+                                {% endif %}
+                            </small>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark">
+                                {{ site.backup_count or 0 }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary" 
+                                        onclick="manageSite('{{ site.id }}')"
+                                        title="Manage Site">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                <button class="btn btn-outline-info" 
+                                        onclick="openWPAdmin('{{ site.domain_name }}', '{{ site.subdirectory }}')"
+                                        title="WP Admin">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </button>
+                                <button class="btn btn-outline-success" 
+                                        onclick="backupSite('{{ site.id }}')"
+                                        title="Backup Site">
+                                    <i class="fas fa-save"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" 
+                                        onclick="deleteSite('{{ site.id }}')"
+                                        title="Delete Site">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- WordPress Site Management Modal -->
+<div class="modal fade" id="wpManageModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">WordPress Site Management</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- Site Information -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">Site Information</h6>
+                            </div>
+                            <div class="card-body" id="site-info">
+                                <!-- Site info will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Site Actions -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">Quick Actions</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-outline-primary" onclick="updateWordPress()">
+                                        <i class="fas fa-download me-2"></i>Update WordPress
+                                    </button>
+                                    <button class="btn btn-outline-success" onclick="toggleMaintenanceMode()">
+                                        <i class="fas fa-tools me-2"></i>Toggle Maintenance Mode
+                                    </button>
+                                    <button class="btn btn-outline-info" onclick="managePlugins()">
+                                        <i class="fas fa-plug me-2"></i>Manage Plugins
+                                    </button>
+                                    <button class="btn btn-outline-warning" onclick="manageThemes()">
+                                        <i class="fas fa-palette me-2"></i>Manage Themes
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="viewLogs()">
+                                        <i class="fas fa-file-alt me-2"></i>View Logs
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Plugin and Theme Management -->
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <ul class="nav nav-tabs" id="wp-tabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="plugins-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#plugins" type="button" role="tab">
+                                    Plugins
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="themes-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#themes" type="button" role="tab">
+                                    Themes
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="backups-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#backups" type="button" role="tab">
+                                    Backups
+                                </button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="wp-tabContent">
+                            <div class="tab-pane fade show active" id="plugins" role="tabpanel">
+                                <div id="plugins-content" class="p-3">
+                                    <!-- Plugins content will be loaded here -->
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="themes" role="tabpanel">
+                                <div id="themes-content" class="p-3">
+                                    <!-- Themes content will be loaded here -->
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="backups" role="tabpanel">
+                                <div id="backups-content" class="p-3">
+                                    <!-- Backups content will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Notification system
+function showNotification(message, type = 'info') {
+    const alertsContainer = document.getElementById('alerts-container') || 
+                           (() => {
+                               const container = document.createElement('div');
+                               container.id = 'alerts-container';
+                               container.style.position = 'fixed';
+                               container.style.top = '20px';
+                               container.style.right = '20px';
+                               container.style.zIndex = '9999';
+                               container.style.minWidth = '300px';
+                               document.body.appendChild(container);
+                               return container;
+                           })();
+
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.style.marginBottom = '10px';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+
+    alertsContainer.appendChild(alertDiv);
+
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+
+// WordPress Management JavaScript
+document.getElementById('wp-install-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    installWordPress();
+});
+
+function installWordPress() {
+    const formData = {
+        domain: document.getElementById('wp-domain').value,
+        subdirectory: document.getElementById('wp-subdirectory').value,
+        version: document.getElementById('wp-version').value,
+        admin_user: document.getElementById('wp-admin-user').value,
+        admin_email: document.getElementById('wp-admin-email').value,
+        admin_password: document.getElementById('wp-admin-password').value,
+        site_title: document.getElementById('wp-site-title').value,
+        ssl_enable: document.getElementById('wp-ssl-enable').checked,
+        cloudflare: document.getElementById('wp-cloudflare').checked,
+        auto_update: document.getElementById('wp-auto-update').checked
+    };
+    
+    // Show loading state
+    const submitBtn = document.querySelector('#wp-install-form button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Installing...';
+    submitBtn.disabled = true;
+    
+    fetch('/api/wordpress/install', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('WordPress installed successfully!', 'success');
+            clearForm();
+            location.reload();
+        } else {
+            showNotification('Error: ' + data.message, 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Error installing WordPress', 'danger');
+    })
+    .finally(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+}
+
+function clearForm() {
+    document.getElementById('wp-install-form').reset();
+}
+
+function manageSite(siteId) {
+    // Load site information and show management modal
+    fetch(`/api/wordpress/${siteId}`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('site-info').innerHTML = data.site_info_html;
+            document.getElementById('plugins-content').innerHTML = data.plugins_html;
+            document.getElementById('themes-content').innerHTML = data.themes_html;
+            document.getElementById('backups-content').innerHTML = data.backups_html;
+            
+            new bootstrap.Modal(document.getElementById('wpManageModal')).show();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Error loading site data', 'danger');
+    });
+}
+
+function openWPAdmin(domain, subdirectory) {
+    let url = `https://${domain}`;
+    if (subdirectory) {
+        url += `/${subdirectory}`;
+    }
+    url += '/wp-admin';
+    window.open(url, '_blank');
+}
+
+function backupSite(siteId) {
+    if (confirm('Create a backup of this WordPress site?')) {
+        fetch(`/api/wordpress/${siteId}/backup`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            showNotification(data.message, data.success ? 'success' : 'danger');
+            if (data.success) {
+                location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Error creating backup', 'danger');
+        });
+    }
+}
+
+function deleteSite(siteId) {
+    if (confirm('Are you sure you want to delete this WordPress site? This action cannot be undone.')) {
+        fetch(`/api/wordpress/${siteId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                showNotification('Error: ' + data.message, 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Error deleting site', 'danger');
+        });
+    }
+}
+
+// Bulk actions
+function checkAllUpdates() {
+    fetch('/api/wordpress/check-updates', {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        showNotification(data.message, data.success ? 'success' : 'info');
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+function updateSelectedWP() {
+    const selectedSites = Array.from(document.querySelectorAll('.wp-checkbox:checked'))
+                             .map(cb => cb.value);
+    
+    if (selectedSites.length === 0) {
+        showNotification('Please select sites first', 'warning');
+        return;
+    }
+    
+    fetch('/api/wordpress/bulk/update', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ site_ids: selectedSites })
+    })
+    .then(response => response.json())
+    .then(data => {
+        showNotification(data.message, data.success ? 'success' : 'danger');
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+function maintenanceMode() {
+    const selectedSites = Array.from(document.querySelectorAll('.wp-checkbox:checked'))
+                             .map(cb => cb.value);
+    
+    if (selectedSites.length === 0) {
+        showNotification('Please select sites first', 'warning');
+        return;
+    }
+    
+    fetch('/api/wordpress/bulk/maintenance', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ site_ids: selectedSites })
+    })
+    .then(response => response.json())
+    .then(data => {
+        showNotification(data.message, data.success ? 'success' : 'danger');
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+function enableSSLSelected() {
+    const selectedSites = Array.from(document.querySelectorAll('.wp-checkbox:checked'))
+                             .map(cb => cb.value);
+    
+    if (selectedSites.length === 0) {
+        showNotification('Please select sites first', 'warning');
+        return;
+    }
+    
+    fetch('/api/wordpress/bulk/enable-ssl', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ site_ids: selectedSites })
+    })
+    .then(response => response.json())
+    .then(data => {
+        showNotification(data.message, data.success ? 'success' : 'danger');
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+function backupSelected() {
+    const selectedSites = Array.from(document.querySelectorAll('.wp-checkbox:checked'))
+                             .map(cb => cb.value);
+    
+    if (selectedSites.length === 0) {
+        showNotification('Please select sites first', 'warning');
+        return;
+    }
+    
+    if (confirm(`Create backups for ${selectedSites.length} selected sites?`)) {
+        fetch('/api/wordpress/bulk/backup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ site_ids: selectedSites })
+        })
+        .then(response => response.json())
+        .then(data => {
+            showNotification(data.message, data.success ? 'success' : 'danger');
+        });
+    }
+}
+
+// Search and filter functionality
+document.getElementById('wp-search').addEventListener('input', filterWPSites);
+document.getElementById('wp-status-filter').addEventListener('change', filterWPSites);
+document.getElementById('wp-version-filter').addEventListener('change', filterWPSites);
+
+function filterWPSites() {
+    const searchTerm = document.getElementById('wp-search').value.toLowerCase();
+    const statusFilter = document.getElementById('wp-status-filter').value;
+    const versionFilter = document.getElementById('wp-version-filter').value;
+    
+    const rows = document.querySelectorAll('#wp-sites-table tbody tr');
+    
+    rows.forEach(row => {
+        const siteName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+        const status = row.querySelector('td:nth-child(4) .badge').textContent.toLowerCase();
+        const version = row.querySelector('td:nth-child(3) .badge').textContent.toLowerCase();
+        
+        let show = true;
+        
+        if (searchTerm && !siteName.includes(searchTerm)) {
+            show = false;
+        }
+        
+        if (statusFilter && !status.includes(statusFilter)) {
+            show = false;
+        }
+        
+        if (versionFilter && !version.includes(versionFilter)) {
+            show = false;
+        }
+        
+        row.style.display = show ? '' : 'none';
+    });
+}
+
+// Select all functionality
+document.getElementById('select-all-wp').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('.wp-checkbox');
+    checkboxes.forEach(cb => cb.checked = this.checked);
+});
+
+// Site management functions (called from within the modal)
+let currentSiteId = null;
+
+function updateWordPress() {
+    if (!currentSiteId) return;
+    
+    fetch(`/api/wordpress/${currentSiteId}/update`, {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        showNotification(data.message, data.success ? 'success' : 'danger');
+    });
+}
+
+function toggleMaintenanceMode() {
+    if (!currentSiteId) return;
+    
+    fetch(`/api/wordpress/${currentSiteId}/maintenance`, {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        showNotification(data.message, data.success ? 'success' : 'danger');
+    });
+}
+
+function managePlugins() {
+    // This would open a more detailed plugin management interface
+    showNotification('Plugin management interface would open here', 'info');
+}
+
+function manageThemes() {
+    // This would open a more detailed theme management interface
+    showNotification('Theme management interface would open here', 'info');
+}
+
+function viewLogs() {
+    if (!currentSiteId) return;
+    
+    fetch(`/api/wordpress/${currentSiteId}/logs`)
+    .then(response => response.json())
+    .then(data => {
+        // Display logs in a modal or new window
+        showNotification('Logs would be displayed here', 'info');
+    });
+}
+</script>
+
+{% endblock %}

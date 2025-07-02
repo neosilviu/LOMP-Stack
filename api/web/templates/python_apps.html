@@ -1,0 +1,1226 @@
+<!--
+LOMP Stack v3.0 - Python Applications Management Template
+Author: Silviu Ilie <neosilviu@gmail.com>
+Company: aemdPC
+Copyright © 2025 aemdPC. All rights reserved.
+-->
+{% extends "base.html" %}
+
+{% block title %}Python Applications{% endblock %}
+{% block page_title %}Python Applications{% endblock %}
+{% block subtitle %}Deploy and manage Python web applications{% endblock %}
+
+{% block content %}
+<!-- Python Apps Overview -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">Python Apps</h6>
+                    <h3 class="mb-0" id="total-python-apps">{{ python_apps|length }}</h3>
+                </div>
+                <i class="fab fa-python fa-2x opacity-75" style="color: #3776ab;"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #00b894 0%, #00a085 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">Active Apps</h6>
+                    <h3 class="mb-0" id="active-python-apps">{{ python_apps|selectattr('status', 'equalto', 'active')|list|length }}</h3>
+                </div>
+                <i class="fas fa-check-circle fa-2x opacity-75"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">Django Apps</h6>
+                    <h3 class="mb-0" id="django-apps">{{ python_apps|selectattr('python_framework', 'equalto', 'django')|list|length }}</h3>
+                </div>
+                <i class="fas fa-cube fa-2x opacity-75"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">Flask Apps</h6>
+                    <h3 class="mb-0" id="flask-apps">{{ python_apps|selectattr('python_framework', 'equalto', 'flask')|list|length }}</h3>
+                </div>
+                <i class="fas fa-flask fa-2x opacity-75"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Python App Deployment Panel -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="fab fa-python me-2"></i>Deploy New Python Application
+        </h5>
+    </div>
+    <div class="card-body">
+        <form id="python-deploy-form" class="row g-3">
+            <div class="col-md-4">
+                <label for="python-domain" class="form-label">Domain</label>
+                <select class="form-select" id="python-domain" required>
+                    <option value="">Select a domain...</option>
+                    {% for domain in available_domains %}
+                    <option value="{{ domain.domain_name }}">{{ domain.domain_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="python-subdirectory" class="form-label">Subdirectory (optional)</label>
+                <input type="text" class="form-control" id="python-subdirectory" 
+                       placeholder="e.g., api, app">
+                <div class="form-text">Leave empty to deploy at domain root</div>
+            </div>
+            <div class="col-md-4">
+                <label for="python-framework" class="form-label">Framework</label>
+                <select class="form-select" id="python-framework" required>
+                    <option value="">Select framework...</option>
+                    <option value="flask">Flask</option>
+                    <option value="django">Django</option>
+                    <option value="fastapi">FastAPI</option>
+                    <option value="pyramid">Pyramid</option>
+                    <option value="custom">Custom</option>
+                </select>
+            </div>
+            
+            <div class="col-md-4">
+                <label for="python-version" class="form-label">Python Version</label>
+                <select class="form-select" id="python-version">
+                    <option value="3.11">Python 3.11 (Recommended)</option>
+                    <option value="3.10">Python 3.10</option>
+                    <option value="3.9">Python 3.9</option>
+                </select>
+            </div>
+            <div class="col-md-8">
+                <label for="git-repository" class="form-label">Git Repository (optional)</label>
+                <input type="url" class="form-control" id="git-repository" 
+                       placeholder="https://github.com/username/repo.git">
+                <div class="form-text">Clone from Git repository or create blank project</div>
+            </div>
+            
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="python-ssl-enable" checked>
+                            <label class="form-check-label" for="python-ssl-enable">
+                                Enable SSL Certificate
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="python-auto-deploy">
+                            <label class="form-check-label" for="python-auto-deploy">
+                                Enable Auto-Deploy from Git
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="python-database">
+                            <label class="form-check-label" for="python-database">
+                                Setup Database (PostgreSQL)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fab fa-python me-1"></i>Deploy Python App
+                </button>
+                <button type="button" class="btn btn-outline-secondary ms-2" onclick="clearPythonForm()">
+                    Clear Form
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Python Applications Management -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="fab fa-python me-2"></i>Python Applications
+        </h5>
+        <div class="btn-group">
+            <button class="btn btn-outline-primary btn-sm" onclick="checkAllAppsHealth()">
+                <i class="fas fa-heartbeat me-1"></i>Health Check
+            </button>
+            <button class="btn btn-outline-success btn-sm" onclick="deploySelected()">
+                <i class="fas fa-rocket me-1"></i>Deploy Selected
+            </button>
+        </div>
+    </div>
+    
+    <div class="card-body">
+        <!-- Search and Filters -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" id="python-search" placeholder="Search Python applications...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="python-status-filter">
+                    <option value="">All Applications</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="error">Error</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="python-framework-filter">
+                    <option value="">All Frameworks</option>
+                    <option value="flask">Flask</option>
+                    <option value="django">Django</option>
+                    <option value="fastapi">FastAPI</option>
+                    <option value="pyramid">Pyramid</option>
+                    <option value="custom">Custom</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Bulk Actions -->
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <div class="d-flex align-items-center">
+                    <div class="form-check me-3">
+                        <input class="form-check-input" type="checkbox" id="select-all-python">
+                        <label class="form-check-label" for="select-all-python">
+                            Select All
+                        </label>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-outline-success btn-sm" onclick="startSelected()">
+                            <i class="fas fa-play me-1"></i>Start Selected
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm" onclick="restartSelected()">
+                            <i class="fas fa-redo me-1"></i>Restart Selected
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="stopSelected()">
+                            <i class="fas fa-stop me-1"></i>Stop Selected
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Python Apps Table -->
+        <div class="table-responsive">
+            <table class="table table-hover" id="python-apps-table">
+                <thead>
+                    <tr>
+                        <th width="3%">
+                            <input type="checkbox" id="select-all">
+                        </th>
+                        <th width="25%">Application</th>
+                        <th width="12%">Framework</th>
+                        <th width="10%">Python</th>
+                        <th width="8%">Port</th>
+                        <th width="10%">Status</th>
+                        <th width="10%">SSL</th>
+                        <th width="22%">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in python_apps %}
+                    <tr data-app-id="{{ app.id }}">
+                        <td>
+                            <input type="checkbox" class="python-checkbox" value="{{ app.id }}">
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                {% if app.python_framework == 'django' %}
+                                    <i class="fas fa-cube me-2 text-success"></i>
+                                {% elif app.python_framework == 'flask' %}
+                                    <i class="fas fa-flask me-2 text-primary"></i>
+                                {% elif app.python_framework == 'fastapi' %}
+                                    <i class="fas fa-rocket me-2 text-danger"></i>
+                                {% else %}
+                                    <i class="fab fa-python me-2 text-warning"></i>
+                                {% endif %}
+                                <div>
+                                    <strong>{{ app.full_domain }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ app.document_root or '/var/www/' + app.domain }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-info">{{ app.python_framework|title }}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary">{{ app.python_version }}</span>
+                        </td>
+                        <td>
+                            <small class="text-muted">{{ app.python_port or 'N/A' }}</small>
+                        </td>
+                        <td>
+                            {% if app.status == 'active' %}
+                                <span class="badge bg-success">Active</span>
+                            {% elif app.status == 'inactive' %}
+                                <span class="badge bg-secondary">Inactive</span>
+                            {% elif app.status == 'error' %}
+                                <span class="badge bg-danger">Error</span>
+                            {% else %}
+                                <span class="badge bg-warning">{{ app.status|title }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if app.ssl_enabled %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-lock me-1"></i>Enabled
+                                </span>
+                            {% else %}
+                                <span class="badge bg-light text-dark">Disabled</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-success" 
+                                        onclick="manageApp('{{ app.id }}', 'start')"
+                                        title="Start Application">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <button class="btn btn-outline-warning" 
+                                        onclick="manageApp('{{ app.id }}', 'restart')"
+                                        title="Restart Application">
+                                    <i class="fas fa-redo"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" 
+                                        onclick="manageApp('{{ app.id }}', 'stop')"
+                                        title="Stop Application">
+                                    <i class="fas fa-stop"></i>
+                                </button>
+                                <button class="btn btn-outline-info" 
+                                        onclick="viewLogs('{{ app.id }}')"
+                                        title="View Logs">
+                                    <i class="fas fa-file-alt"></i>
+                                </button>
+                                <button class="btn btn-outline-primary" 
+                                        onclick="manageApp('{{ app.id }}', 'config')"
+                                        title="Configuration">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary" 
+                                        onclick="openApp('{{ app.full_domain }}')"
+                                        title="Open Application">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Python App Management Modal -->
+<div class="modal fade" id="pythonManageModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Python Application Management</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- App Information -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">Application Information</h6>
+                            </div>
+                            <div class="card-body" id="python-app-info">
+                                <!-- App info will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">Quick Actions</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-outline-success" onclick="deployApp()">
+                                        <i class="fas fa-rocket me-2"></i>Deploy/Update Code
+                                    </button>
+                                    <button class="btn btn-outline-primary" onclick="manageDependencies()">
+                                        <i class="fas fa-cubes me-2"></i>Manage Dependencies
+                                    </button>
+                                    <button class="btn btn-outline-info" onclick="environmentVariables()">
+                                        <i class="fas fa-cog me-2"></i>Environment Variables
+                                    </button>
+                                    <button class="btn btn-outline-warning" onclick="databaseMigrations()">
+                                        <i class="fas fa-database me-2"></i>Database Migrations
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="viewFullLogs()">
+                                        <i class="fas fa-file-alt me-2"></i>View Full Logs
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tabs for detailed management -->
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <ul class="nav nav-tabs" id="python-tabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="environment-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#environment" type="button" role="tab">
+                                    Environment
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="dependencies-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#dependencies" type="button" role="tab">
+                                    Dependencies
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="logs-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#logs" type="button" role="tab">
+                                    Logs
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="performance-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#performance" type="button" role="tab">
+                                    Performance
+                                </button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="python-tabContent">
+                            <div class="tab-pane fade show active" id="environment" role="tabpanel">
+                                <div id="environment-content" class="p-3">
+                                    <!-- Environment content will be loaded here -->
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="dependencies" role="tabpanel">
+                                <div id="dependencies-content" class="p-3">
+                                    <!-- Dependencies content will be loaded here -->
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="logs" role="tabpanel">
+                                <div id="logs-content" class="p-3">
+                                    <!-- Logs content will be loaded here -->
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="performance" role="tabpanel">
+                                <div id="performance-content" class="p-3">
+                                    <!-- Performance content will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Python Application Management JavaScript
+document.getElementById('python-deploy-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    deployPythonApp();
+});
+
+function deployPythonApp() {
+    const formData = {
+        domain: document.getElementById('python-domain').value,
+        subdirectory: document.getElementById('python-subdirectory').value,
+        framework: document.getElementById('python-framework').value,
+        python_version: document.getElementById('python-version').value,
+        git_repository: document.getElementById('git-repository').value,
+        ssl_enable: document.getElementById('python-ssl-enable').checked,
+        auto_deploy: document.getElementById('python-auto-deploy').checked,
+        setup_database: document.getElementById('python-database').checked
+    };
+    
+    // Show loading state
+    const submitBtn = document.querySelector('#python-deploy-form button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Deploying...';
+    submitBtn.disabled = true;
+    
+    fetch('/api/python/deploy', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert(`Python ${formData.framework} application deployed successfully!\nDomain: ${data.domain}\nPort: ${data.port}`, 'success');
+            clearPythonForm();
+            location.reload();
+        } else {
+            showAlert('Error: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('Error deploying Python application', 'error');
+    })
+    .finally(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+}
+
+function clearPythonForm() {
+    document.getElementById('python-deploy-form').reset();
+}
+
+function manageApp(appId, action) {
+    let actionText = action;
+    if (action === 'config') {
+        // Open configuration modal
+        loadAppManagement(appId);
+        return;
+    }
+    
+    fetch(`/api/python/${appId}/action`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: action })
+    })
+    .then(response => response.json())
+    .then(data => {
+        showAlert(data.message, data.success ? 'success' : 'error');
+        if (data.success) {
+            location.reload();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert(`Error ${actionText}ing application`, 'error');
+    });
+}
+
+function loadAppManagement(appId) {
+    // Load app information and show management modal
+    fetch(`/api/python/${appId}`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('python-app-info').innerHTML = data.app_info_html;
+            document.getElementById('environment-content').innerHTML = data.environment_html;
+            document.getElementById('dependencies-content').innerHTML = data.dependencies_html;
+            document.getElementById('logs-content').innerHTML = data.logs_html;
+            document.getElementById('performance-content').innerHTML = data.performance_html;
+            
+            new bootstrap.Modal(document.getElementById('pythonManageModal')).show();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('Error loading application data', 'error');
+    });
+}
+
+function viewLogs(appId) {
+    fetch(`/api/python/${appId}/logs`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Open logs in a new window or modal
+            const logsWindow = window.open('', '_blank', 'width=800,height=600');
+            logsWindow.document.write(`
+                <html>
+                    <head><title>Application Logs</title></head>
+                    <body>
+                        <h3>Application Logs</h3>
+                        <pre style="background:#f5f5f5; padding:10px; overflow:auto;">${data.logs}</pre>
+                    </body>
+                </html>
+            `);
+        } else {
+            showAlert('Error: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('Error retrieving logs', 'error');
+    });
+}
+
+function openApp(domain) {
+    const url = `https://${domain}`;
+    window.open(url, '_blank');
+}
+
+// Bulk actions
+function checkAllAppsHealth() {
+    fetch('/api/python/health-check', {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        showAlert(data.message, data.success ? 'success' : 'info');
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+function startSelected() {
+    bulkAction('start');
+}
+
+function restartSelected() {
+    bulkAction('restart');
+}
+
+function stopSelected() {
+    bulkAction('stop');
+}
+
+function deploySelected() {
+    bulkAction('deploy');
+}
+
+function bulkAction(action) {
+    const selectedApps = Array.from(document.querySelectorAll('.python-checkbox:checked'))
+                            .map(cb => cb.value);
+    
+    if (selectedApps.length === 0) {
+        showAlert('Please select applications first', 'warning');
+        return;
+    }
+    
+    fetch(`/api/python/bulk/${action}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ app_ids: selectedApps })
+    })
+    .then(response => response.json())
+    .then(data => {
+        showAlert(data.message, data.success ? 'success' : 'error');
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+// Search and filter functionality
+document.getElementById('python-search').addEventListener('input', filterPythonApps);
+document.getElementById('python-status-filter').addEventListener('change', filterPythonApps);
+document.getElementById('python-framework-filter').addEventListener('change', filterPythonApps);
+
+function filterPythonApps() {
+    const searchTerm = document.getElementById('python-search').value.toLowerCase();
+    const statusFilter = document.getElementById('python-status-filter').value;
+    const frameworkFilter = document.getElementById('python-framework-filter').value;
+    
+    const rows = document.querySelectorAll('#python-apps-table tbody tr');
+    
+    rows.forEach(row => {
+        const appName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+        const status = row.querySelector('td:nth-child(6) .badge').textContent.toLowerCase();
+        const framework = row.querySelector('td:nth-child(3) .badge').textContent.toLowerCase();
+        
+        let show = true;
+        
+        if (searchTerm && !appName.includes(searchTerm)) {
+            show = false;
+        }
+        
+        if (statusFilter && !status.includes(statusFilter)) {
+            show = false;
+        }
+        
+        if (frameworkFilter && !framework.includes(frameworkFilter)) {
+            show = false;
+        }
+        
+        row.style.display = show ? '' : 'none';
+    });
+}
+
+// Select all functionality
+document.getElementById('select-all-python').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('.python-checkbox');
+    checkboxes.forEach(cb => cb.checked = this.checked);
+});
+
+// App management functions (called from within the modal)
+let currentAppId = null;
+
+function deployApp() {
+    if (!currentAppId) return;
+    
+    // Check if Git repository is configured for auto-deploy
+    const gitRepo = document.querySelector(`[data-app-id="${currentAppId}"]`).dataset.gitRepo;
+    
+    if (gitRepo) {
+        // Deploy from Git
+        fetch(`/api/python-apps/deploy-from-git`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                site_id: currentAppId,
+                git_repo: gitRepo,
+                git_branch: 'main'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            showAlert(data.message, data.success ? 'success' : 'error');
+            if (data.success) {
+                location.reload();
+            }
+        })
+        .catch(error => {
+            showAlert('Deploy failed: ' + error.message, 'error');
+        });
+    } else {
+        // Regular deployment restart
+        fetch(`/api/python/${currentAppId}/deploy`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            showAlert(data.message, data.success ? 'success' : 'error');
+        });
+    }
+}
+
+function manageDependencies() {
+    if (!currentAppId) return;
+    
+    // Create dependency management modal
+    const modalHtml = `
+        <div class="modal fade" id="dependencyModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Manage Dependencies</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Install New Packages</h6>
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" id="newPackage" 
+                                           placeholder="package-name==version">
+                                    <button class="btn btn-primary" onclick="installPackage()">Install</button>
+                                </div>
+                                <div class="form-text">Examples: flask==2.3.0, django>=4.0, requests</div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Installed Packages</h6>
+                                <div id="installedPackages" style="max-height: 300px; overflow-y: auto;">
+                                    <div class="text-center">
+                                        <div class="spinner-border" role="status"></div>
+                                        <div>Loading...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remove existing modal if any
+    const existingModal = document.getElementById('dependencyModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Add modal to page
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('dependencyModal'));
+    modal.show();
+    
+    // Load current dependencies
+    loadInstalledPackages();
+}
+
+function loadInstalledPackages() {
+    fetch(`/api/python-apps/${currentAppId}/dependencies`)
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('installedPackages');
+            if (data.success && data.dependencies.length > 0) {
+                let html = '<div class="list-group">';
+                data.dependencies.forEach(pkg => {
+                    html += `
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>${pkg.name}</strong>
+                                <small class="text-muted">${pkg.version}</small>
+                            </div>
+                            <button class="btn btn-sm btn-outline-danger" 
+                                    onclick="uninstallPackage('${pkg.name}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = '<div class="text-muted">No packages found</div>';
+            }
+        })
+        .catch(error => {
+            document.getElementById('installedPackages').innerHTML = 
+                '<div class="text-danger">Error loading packages</div>';
+        });
+}
+
+function installPackage() {
+    const packageName = document.getElementById('newPackage').value.trim();
+    if (!packageName) return;
+    
+    fetch(`/api/python-apps/${currentAppId}/dependencies`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            packages: [packageName]
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        showAlert(data.message, data.success ? 'success' : 'error');
+        if (data.success) {
+            document.getElementById('newPackage').value = '';
+            loadInstalledPackages();
+        }
+    })
+    .catch(error => {
+        showAlert('Install failed: ' + error.message, 'error');
+    });
+}
+
+function environmentVariables() {
+    if (!currentAppId) return;
+    
+    // Create environment variables modal
+    const modalHtml = `
+        <div class="modal fade" id="envModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Environment Variables</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Environment Variables (.env file)</label>
+                            <textarea class="form-control" id="envVariables" rows="15" 
+                                      style="font-family: monospace; font-size: 12px;"
+                                      placeholder="KEY=value&#10;DATABASE_URL=postgresql://...&#10;DEBUG=True"></textarea>
+                            <div class="form-text">One variable per line in KEY=value format</div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-success" onclick="saveEnvironmentVariables()">
+                                <i class="fas fa-save me-1"></i>Save Variables
+                            </button>
+                            <button class="btn btn-outline-info" onclick="addCommonEnvVars()">
+                                <i class="fas fa-plus me-1"></i>Add Common Variables
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remove existing modal if any
+    const existingModal = document.getElementById('envModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Add modal to page
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('envModal'));
+    modal.show();
+    
+    // Load current environment variables
+    loadEnvironmentVariables();
+}
+
+function loadEnvironmentVariables() {
+    fetch(`/api/python-apps/${currentAppId}/environment`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                let envText = '';
+                Object.entries(data.environment).forEach(([key, value]) => {
+                    envText += `${key}=${value}\n`;
+                });
+                document.getElementById('envVariables').value = envText;
+            }
+        })
+        .catch(error => {
+            showAlert('Error loading environment variables', 'error');
+        });
+}
+
+function saveEnvironmentVariables() {
+    const envText = document.getElementById('envVariables').value;
+    const envVars = {};
+    
+    // Parse environment variables
+    envText.split('\n').forEach(line => {
+        line = line.trim();
+        if (line && !line.startsWith('#') && line.includes('=')) {
+            const [key, ...valueParts] = line.split('=');
+            envVars[key.trim()] = valueParts.join('=').trim();
+        }
+    });
+    
+    fetch(`/api/python-apps/${currentAppId}/environment`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            environment: envVars
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        showAlert(data.message, data.success ? 'success' : 'error');
+        if (data.success) {
+            bootstrap.Modal.getInstance(document.getElementById('envModal')).hide();
+        }
+    })
+    .catch(error => {
+        showAlert('Save failed: ' + error.message, 'error');
+    });
+}
+
+function addCommonEnvVars() {
+    const commonVars = `
+# Database Configuration
+DATABASE_URL=postgresql://user:password@localhost/dbname
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=your_database
+DB_USER=your_user
+DB_PASSWORD=your_password
+
+# Application Settings
+DEBUG=False
+SECRET_KEY=your-secret-key-here
+ALLOWED_HOSTS=localhost,your-domain.com
+
+# Cache Settings
+REDIS_URL=redis://localhost:6379/0
+
+# Email Settings
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_PASSWORD=your-app-password
+`;
+    
+    const envTextarea = document.getElementById('envVariables');
+    envTextarea.value = envTextarea.value + commonVars;
+}
+
+function databaseMigrations() {
+    if (!currentAppId) return;
+    
+    // Create database management modal
+    const modalHtml = `
+        <div class="modal fade" id="databaseModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Database Management</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Setup New Database</h6>
+                                <form id="databaseForm">
+                                    <div class="mb-3">
+                                        <label class="form-label">Database Type</label>
+                                        <select class="form-select" id="dbType">
+                                            <option value="postgresql">PostgreSQL</option>
+                                            <option value="mysql">MySQL</option>
+                                            <option value="sqlite">SQLite</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Database Name</label>
+                                        <input type="text" class="form-control" id="dbName" 
+                                               placeholder="my_app_db">
+                                    </div>
+                                    <button type="button" class="btn btn-primary" onclick="setupDatabase()">
+                                        <i class="fas fa-database me-1"></i>Setup Database
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Migration Commands</h6>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-outline-success" onclick="runMigration('migrate')">
+                                        <i class="fas fa-arrow-up me-1"></i>Run Migrations
+                                    </button>
+                                    <button class="btn btn-outline-info" onclick="runMigration('makemigrations')">
+                                        <i class="fas fa-file-code me-1"></i>Create Migrations
+                                    </button>
+                                    <button class="btn btn-outline-warning" onclick="runMigration('showmigrations')">
+                                        <i class="fas fa-list me-1"></i>Show Migrations
+                                    </button>
+                                    <button class="btn btn-outline-danger" onclick="runMigration('reset')">
+                                        <i class="fas fa-trash me-1"></i>Reset Database
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <h6>Migration Output</h6>
+                            <pre id="migrationOutput" style="background: #f8f9fa; padding: 10px; border-radius: 4px; max-height: 200px; overflow-y: auto;"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remove existing modal if any
+    const existingModal = document.getElementById('databaseModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Add modal to page
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('databaseModal'));
+    modal.show();
+}
+
+function setupDatabase() {
+    const dbType = document.getElementById('dbType').value;
+    const dbName = document.getElementById('dbName').value.trim();
+    
+    if (!dbName) {
+        showAlert('Please enter a database name', 'error');
+        return;
+    }
+    
+    fetch(`/api/python-apps/${currentAppId}/database`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            db_type: dbType,
+            db_name: dbName
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        showAlert(data.message, data.success ? 'success' : 'error');
+        if (data.success && data.database) {
+            const output = document.getElementById('migrationOutput');
+            output.textContent = `Database created successfully!\n\nConnection Details:\nType: ${data.database.type}\nName: ${data.database.name}\nUser: ${data.database.user}\nPassword: ${data.database.password}`;
+        }
+    })
+    .catch(error => {
+        showAlert('Database setup failed: ' + error.message, 'error');
+    });
+}
+
+function runMigration(action) {
+    fetch(`/api/python/${currentAppId}/migrate`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            action: action
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        const output = document.getElementById('migrationOutput');
+        output.textContent = data.output || data.message || 'Migration completed';
+        showAlert(data.message, data.success ? 'success' : 'error');
+    })
+    .catch(error => {
+        showAlert('Migration failed: ' + error.message, 'error');
+    });
+}
+
+function setupSSL(appId) {
+    fetch(`/api/python-apps/${appId}/ssl`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            email: 'admin@example.com'  // You might want to prompt for this
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        showAlert(data.message, data.success ? 'success' : 'error');
+        if (data.success) {
+            location.reload();
+        }
+    })
+    .catch(error => {
+        showAlert('SSL setup failed: ' + error.message, 'error');
+    });
+}
+
+function showPerformanceMetrics(appId) {
+    fetch(`/api/python-apps/${appId}/performance`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const metrics = data.metrics;
+                const modalHtml = `
+                    <div class="modal fade" id="performanceModal" tabindex="-1">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Performance Metrics</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="card">
+                                                <div class="card-body text-center">
+                                                    <h5 class="card-title">CPU Usage</h5>
+                                                    <h2 class="text-primary">${metrics.cpu_usage.toFixed(1)}%</h2>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="card">
+                                                <div class="card-body text-center">
+                                                    <h5 class="card-title">Memory Usage</h5>
+                                                    <h2 class="text-warning">${metrics.memory_usage.toFixed(1)}%</h2>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="card">
+                                                <div class="card-body text-center">
+                                                    <h5 class="card-title">Status</h5>
+                                                    <h2 class="text-${metrics.status === 'active' ? 'success' : 'danger'}">${metrics.status}</h2>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="card">
+                                                <div class="card-body text-center">
+                                                    <h5 class="card-title">Uptime</h5>
+                                                    <h2 class="text-info">${metrics.uptime}</h2>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Remove existing modal if any
+                const existingModal = document.getElementById('performanceModal');
+                if (existingModal) {
+                    existingModal.remove();
+                }
+                
+                // Add modal to page
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+                
+                // Show modal
+                const modal = new bootstrap.Modal(document.getElementById('performanceModal'));
+                modal.show();
+            }
+        })
+        .catch(error => {
+            showAlert('Error loading performance metrics', 'error');
+        });
+}
+
+// Helper function to show alerts
+function showAlert(message, type = 'info') {
+    const alertHtml = `
+        <div class="alert alert-${type} alert-dismissible fade show position-fixed" 
+             style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', alertHtml);
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            if (alert.textContent.includes(message)) {
+                alert.remove();
+            }
+        });
+    }, 5000);
+}
+
+function viewFullLogs() {
+    if (!currentAppId) return;
+    viewLogs(currentAppId);
+}
+</script>
+
+{% endblock %}

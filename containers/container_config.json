@@ -1,0 +1,101 @@
+{
+    "orchestration": {
+        "enabled": true,
+        "default_platform": "docker",
+        "supported_platforms": ["docker", "kubernetes", "docker-swarm"],
+        "auto_scaling": {
+            "enabled": true,
+            "cpu_threshold": 70,
+            "memory_threshold": 80,
+            "min_replicas": 1,
+            "max_replicas": 10
+        }
+    },
+    "docker": {
+        "enabled": true,
+        "version": "latest",
+        "registry": {
+            "enabled": true,
+            "port": 5000,
+            "ssl": true,
+            "authentication": true
+        },
+        "compose": {
+            "enabled": true,
+            "version": "3.8"
+        }
+    },
+    "kubernetes": {
+        "enabled": true,
+        "cluster_name": "lomp-k8s-cluster",
+        "master_node": true,
+        "worker_nodes": 3,
+        "network_plugin": "flannel",
+        "ingress_controller": "nginx",
+        "monitoring": {
+            "prometheus": true,
+            "grafana": true,
+            "jaeger": false
+        }
+    },
+    "docker_swarm": {
+        "enabled": true,
+        "manager_nodes": 1,
+        "worker_nodes": 2,
+        "overlay_network": "lomp-swarm-network",
+        "secrets_management": true
+    },
+    "security": {
+        "image_scanning": true,
+        "vulnerability_assessment": true,
+        "access_control": true,
+        "network_policies": true,
+        "secrets_encryption": true
+    },
+    "monitoring": {
+        "enabled": true,
+        "metrics_collection": true,
+        "log_aggregation": true,
+        "alerting": true,
+        "dashboard": true,
+        "endpoints": {
+            "prometheus": "http://localhost:9090",
+            "grafana": "http://localhost:3000",
+            "cadvisor": "http://localhost:8081",
+            "registry_ui": "http://localhost:8080"
+        }
+    },
+    "performance": {
+        "cpu_limits": {
+            "default": "0.5",
+            "max": "2.0"
+        },
+        "memory_limits": {
+            "default": "512Mi",
+            "max": "2Gi"
+        },
+        "storage_limits": {
+            "default": "1Gi",
+            "max": "10Gi"
+        }
+    },
+    "networking": {
+        "default_network": "bridge",
+        "custom_networks": [
+            "lomp-frontend",
+            "lomp-backend",
+            "lomp-database"
+        ],
+        "port_ranges": {
+            "web": "8000-8999",
+            "api": "9000-9999",
+            "database": "3306,5432,27017"
+        }
+    },
+    "backup": {
+        "enabled": true,
+        "schedule": "0 2 * * *",
+        "retention_days": 30,
+        "storage_path": "/var/lib/lomp/backups/containers"
+    }
+}

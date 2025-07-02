@@ -1,0 +1,115 @@
+{
+  "wp_advanced_manager": {
+    "version": "2.0.0",
+    "enabled": true,
+    "auto_updates": true,
+    "security_hardening": true,
+    "performance_optimization": true
+  },
+  "plugin_management": {
+    "auto_updates": {
+      "enabled": true,
+      "security_plugins": true,
+      "core_plugins": false,
+      "custom_plugins": false
+    },
+    "marketplace_integration": {
+      "wordpress_org": true,
+      "codecanyon": false,
+      "github": true
+    },
+    "quality_checks": {
+      "security_scan": true,
+      "performance_test": true,
+      "compatibility_check": true
+    },
+    "backup_before_update": true
+  },
+  "theme_management": {
+    "deployment": {
+      "staging_first": true,
+      "backup_previous": true,
+      "validate_compatibility": true
+    },
+    "customization": {
+      "child_themes": true,
+      "custom_css": true,
+      "theme_modifications": true
+    },
+    "marketplace_integration": {
+      "themeforest": false,
+      "wordpress_org": true,
+      "github": true
+    }
+  },
+  "multisite_management": {
+    "enabled": false,
+    "network_admin": {
+      "centralized_plugins": true,
+      "centralized_themes": true,
+      "user_management": true
+    },
+    "site_templates": {
+      "enabled": true,
+      "default_template": "standard",
+      "custom_templates": []
+    },
+    "domain_mapping": {
+      "enabled": false,
+      "ssl_support": true
+    }
+  },
+  "content_pipeline": {
+    "enabled": true,
+    "automation": {
+      "content_sync": true,
+      "media_optimization": true,
+      "seo_optimization": true
+    },
+    "staging": {
+      "enabled": true,
+      "auto_sync": false,
+      "approval_workflow": true
+    },
+    "version_control": {
+      "enabled": false,
+      "git_integration": false
+    }
+  },
+  "optimization": {
+    "caching": {
+      "object_cache": true,
+      "page_cache": true,
+      "database_cache": true
+    },
+    "database": {
+      "auto_cleanup": true,
+      "optimize_tables": true,
+      "remove_spam": true
+    },
+    "media": {
+      "image_compression": true,
+      "webp_conversion": true,
+      "lazy_loading": true
+    }
+  },
+  "security": {
+    "hardening": {
+      "hide_wp_version": true,
+      "disable_file_editing": true,
+      "limit_login_attempts": true,
+      "two_factor_auth": false
+    },
+    "monitoring": {
+      "file_integrity": true,
+      "malware_scan": true,
+      "vulnerability_check": true
+    },
+    "backups": {
+      "automated": true,
+      "frequency": "daily",
+      "retention_days": 30,
+      "remote_storage": true
+    }
+  }
+}

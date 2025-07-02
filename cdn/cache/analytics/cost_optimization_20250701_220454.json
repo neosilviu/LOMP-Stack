@@ -1,0 +1,50 @@
+{
+  "timestamp": "2025-07-01T22:04:54+03:00",
+  "current_costs": {
+    "cloudflare": {
+      "monthly_cost": 125,
+      "bandwidth_cost": 85,
+      "requests_cost": 25,
+      "features_cost": 15
+    },
+    "aws_cloudfront": {
+      "monthly_cost": 195.5,
+      "bandwidth_cost": 145,
+      "requests_cost": 35.5,
+      "features_cost": 15
+    },
+    "azure_cdn": {
+      "monthly_cost": 165.25,
+      "bandwidth_cost": 120,
+      "requests_cost": 30.25,
+      "features_cost": 15
+    }
+  },
+  "optimization_opportunities": [
+    {
+      "type": "provider_redistribution",
+      "description": "Increase Cloudflare traffic share to 80%",
+      "potential_savings": 45.75,
+      "implementation_effort": "low"
+    },
+    {
+      "type": "cache_optimization",
+      "description": "Increase TTL for static assets",
+      "potential_savings": 28.5,
+      "implementation_effort": "low"
+    },
+    {
+      "type": "compression",
+      "description": "Enable Brotli compression for all text assets",
+      "potential_savings": 18.25,
+      "implementation_effort": "medium"
+    },
+    {
+      "type": "image_optimization",
+      "description": "Convert images to WebP format",
+      "potential_savings": 35.8,
+      "implementation_effort": "medium"
+    }
+  ],
+  "projected_savings": 128.3
+}

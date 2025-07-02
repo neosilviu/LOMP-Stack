@@ -1,0 +1,48 @@
+{
+    "version": "2.0.0",
+    "cloud_providers": {
+        "aws": {
+            "enabled": false,
+            "region": "us-east-1",
+            "credentials_file": "~/.aws/credentials",
+            "services": {
+                "ec2": true,
+                "rds": true,
+                "s3": true,
+                "cloudfront": true,
+                "route53": true
+            }
+        },
+        "digitalocean": {
+            "enabled": false,
+            "region": "nyc3",
+            "api_token_file": "~/.config/doctl/config.yaml",
+            "services": {
+                "droplets": true,
+                "spaces": true,
+                "load_balancers": true,
+                "databases": true,
+                "cdn": true
+            }
+        },
+        "azure": {
+            "enabled": false,
+            "location": "East US",
+            "subscription_id": "",
+            "services": {
+                "vms": true,
+                "storage": true,
+                "cdn": true,
+                "database": true,
+                "app_service": true
+            }
+        }
+    },
+    "global_settings": {
+        "auto_backup": true,
+        "monitoring": true,
+        "ssl_enabled": true,
+        "cdn_enabled": true,
+        "multi_region": false
+    }
+}

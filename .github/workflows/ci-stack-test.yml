@@ -1,0 +1,24 @@
+name: CI Stack Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-stack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up Bash
+        run: sudo apt-get update && sudo apt-get install -y bash
+      - name: Install dependencies for stack scripts
+        run: |
+          sudo apt-get install -y curl unzip lsb-release software-properties-common gnupg2 ca-certificates netdata redis-server php php-fpm mariadb-server mysql-server fail2ban ufw nodejs npm git
+          sudo npm install -g npm@latest
+      - name: Run stack tests
+        run: |
+          chmod +x tests/test_stack.sh
+          ./tests/test_stack.sh

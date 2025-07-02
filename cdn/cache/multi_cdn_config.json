@@ -1,0 +1,33 @@
+{
+        "strategy": "performance",
+        "providers": {
+            "primary": "cloudflare",
+            "secondary": "aws_cloudfront",
+            "tertiary": "azure_cdn"
+        },
+        "health_checks": {
+            "enabled": true,
+            "interval_seconds": 30,
+            "timeout_seconds": 10,
+            "failure_threshold": 3
+        },
+        "routing_rules": [
+            {
+                "condition": "response_time > 500ms",
+                "action": "failover_to_secondary"
+            },
+            {
+                "condition": "error_rate > 5%",
+                "action": "redistribute_traffic"
+            },
+            {
+                "condition": "provider_down",
+                "action": "emergency_failover"
+            }
+        ],
+        "traffic_distribution": {
+            "cloudflare": 60,
+            "aws_cloudfront": 30,
+            "azure_cdn": 10
+        }
+    }

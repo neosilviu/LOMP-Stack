@@ -1,0 +1,11 @@
+{
+        "minify": {
+            "html": "on",
+            "css": "on",
+            "js": "on"
+        },
+        "rocket_loader": "on",
+        "mirage": "on",
+        "polish": "lossy",
+        "brotli": "on"
+    }

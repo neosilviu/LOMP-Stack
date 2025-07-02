@@ -1,0 +1,352 @@
+<!--
+LOMP Stack v3.0 Template
+Author: Silviu Ilie <neosilviu@gmail.com>
+Company: aemdPC
+Copyright © 2025 aemdPC. All rights reserved.
+-->
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block subtitle %}System overview and real-time statistics{% endblock %}
+
+{% block content %}
+<!-- Update Notifications -->
+{% if notifications %}
+<div class="row mb-4">
+    <div class="col-12">
+        {% for notification in notifications %}
+        {% if notification.type == 'update' %}
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-download fa-lg me-3"></i>
+                <div class="flex-grow-1">
+                    <h6 class="alert-heading mb-1">{{ notification.title }}</h6>
+                    <p class="mb-1">{{ notification.message }}</p>
+                </div>
+                <div>
+                    <a href="{{ notification.action_url }}" class="btn btn-outline-info btn-sm me-2">
+                        <i class="fas fa-eye"></i> View Updates
+                    </a>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Update Status Banner (if update available) -->
+{% if update_status and update_status.update_available %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-success">
+            <div class="card-body py-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-download fa-2x text-success me-3"></i>
+                        <div>
+                            <h6 class="mb-1 text-success">LOMP Stack v{{ update_status.latest_version }} Available</h6>
+                            <small class="text-muted">Current version: v{{ update_status.current_version }}</small>
+                        </div>
+                    </div>
+                    <div>
+                        <a href="/updates" class="btn btn-success btn-sm">
+                            <i class="fas fa-download"></i> Update Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">Total API Keys</h6>
+                    <h3 class="mb-0" id="total-keys">{{ stats.total_keys or 0 }}</h3>
+                </div>
+                <i class="fas fa-key fa-2x opacity-75"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #00b894 0%, #00a085 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">Active Keys</h6>
+                    <h3 class="mb-0" id="active-keys">{{ stats.active_keys or 0 }}</h3>
+                </div>
+                <i class="fas fa-check-circle fa-2x opacity-75"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">Requests Today</h6>
+                    <h3 class="mb-0">{{ stats.total_requests_today or 0 }}</h3>
+                </div>
+                <i class="fas fa-chart-line fa-2x opacity-75"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">System Uptime</h6>
+                    <h3 class="mb-0 fs-6">{{ stats.uptime or '0 min' }}</h3>
+                </div>
+                <i class="fas fa-clock fa-2x opacity-75"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Status -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-server me-2"></i>
+                    System Performance
+                </h5>
+                
+                <!-- CPU Usage -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>CPU Usage</span>
+                        <span id="cpu-usage">{{ stats.cpu_usage or '0%' }}</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar bg-primary" role="progressbar" 
+                             style="width: {{ stats.cpu_usage or '0%' }}" 
+                             aria-valuenow="{{ stats.cpu_usage[:-1] if stats.cpu_usage else 0 }}" 
+                             aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+                
+                <!-- Memory Usage -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>Memory Usage</span>
+                        <span id="memory-usage">{{ stats.memory_usage or '0%' }}</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar bg-warning" role="progressbar" 
+                             style="width: {{ stats.memory_usage or '0%' }}" 
+                             aria-valuenow="{{ stats.memory_usage[:-1] if stats.memory_usage else 0 }}" 
+                             aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+                
+                <!-- Disk Usage -->
+                <div class="mb-0">
+                    <div class="d-flex justify-content-between">
+                        <span>Disk Usage</span>
+                        <span id="disk-usage">{{ stats.disk_usage or '0%' }}</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar bg-success" role="progressbar" 
+                             style="width: {{ stats.disk_usage or '0%' }}" 
+                             aria-valuenow="{{ stats.disk_usage[:-1] if stats.disk_usage else 0 }}" 
+                             aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-shield-alt me-2"></i>
+                    Security Status
+                </h5>
+                
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fas fa-circle status-online me-2"></i>
+                    <span>API Server</span>
+                    <span class="badge bg-success ms-auto">Online</span>
+                </div>
+                
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fas fa-circle status-online me-2"></i>
+                    <span>Authentication</span>
+                    <span class="badge bg-success ms-auto">Active</span>
+                </div>
+                
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fas fa-circle status-warning me-2"></i>
+                    <span>Rate Limiting</span>
+                    <span class="badge bg-warning ms-auto">Enabled</span>
+                </div>
+                
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-circle status-online me-2"></i>
+                    <span>SSL/TLS</span>
+                    <span class="badge bg-info ms-auto">Configured</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-bolt me-2"></i>
+                    Quick Actions
+                </h5>
+                
+                <div class="row">
+                    <div class="col-md-3">
+                        <a href="/api-keys" class="btn btn-primary w-100 mb-2">
+                            <i class="fas fa-plus me-2"></i>
+                            Create API Key
+                        </a>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <a href="/configuration" class="btn btn-secondary w-100 mb-2">
+                            <i class="fas fa-cog me-2"></i>
+                            Configuration
+                        </a>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <a href="/monitoring" class="btn btn-info w-100 mb-2">
+                            <i class="fas fa-chart-line me-2"></i>
+                            Monitoring
+                        </a>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <a href="/logs" class="btn btn-warning w-100 mb-2">
+                            <i class="fas fa-file-alt me-2"></i>
+                            View Logs
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-history me-2"></i>
+                    Recent Activity
+                </h5>
+                
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item border-0 px-0">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-key text-primary me-3"></i>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0">API Key Created</h6>
+                                <small class="text-muted">New API key generated for monitoring service</small>
+                            </div>
+                            <small class="text-muted">2 minutes ago</small>
+                        </div>
+                    </div>
+                    
+                    <div class="list-group-item border-0 px-0">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-cog text-warning me-3"></i>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0">Configuration Updated</h6>
+                                <small class="text-muted">Rate limiting settings modified</small>
+                            </div>
+                            <small class="text-muted">15 minutes ago</small>
+                        </div>
+                    </div>
+                    
+                    <div class="list-group-item border-0 px-0">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-user text-success me-3"></i>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0">Admin Login</h6>
+                                <small class="text-muted">Administrator logged in successfully</small>
+                            </div>
+                            <small class="text-muted">1 hour ago</small>
+                        </div>
+                    </div>
+                    
+                    <div class="list-group-item border-0 px-0">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-server text-info me-3"></i>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0">System Started</h6>
+                                <small class="text-muted">API management system started successfully</small>
+                            </div>
+                            <small class="text-muted">2 hours ago</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Real-time chart updates
+const ctx = document.getElementById('performanceChart');
+if (ctx) {
+    const performanceChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['1m', '2m', '3m', '4m', '5m'],
+            datasets: [{
+                label: 'CPU Usage',
+                data: [15, 20, 18, 25, 15],
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                tension: 0.4
+            }, {
+                label: 'Memory Usage',
+                data: [40, 42, 45, 43, 45],
+                borderColor: '#fdcb6e',
+                backgroundColor: 'rgba(253, 203, 110, 0.1)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+}
+
+// Auto-refresh every 30 seconds
+setInterval(refreshStats, 30000);
+</script>
+{% endblock %}

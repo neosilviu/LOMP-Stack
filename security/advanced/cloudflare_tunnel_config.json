@@ -1,0 +1,33 @@
+{
+  "cloudflare_settings": {
+    "api_token": null,
+    "zone_id": null,
+    "account_id": null,
+    "email": null
+  },
+  "tunnel_config": {
+    "tunnel_name": "lomp-stack-tunnel",
+    "ingress": [
+      {
+        "hostname": "*.example.com",
+        "service": "http://localhost:80"
+      },
+      {
+        "service": "http_status:404"
+      }
+    ]
+  },
+  "access_policies": {
+    "enabled": true,
+    "bypass_on_cert": false,
+    "policies": [
+      {
+        "name": "Admin Access",
+        "decision": "allow",
+        "include": [],
+        "require": [],
+        "exclude": []
+      }
+    ]
+  }
+}

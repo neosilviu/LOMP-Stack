@@ -1,0 +1,322 @@
+<!--
+LOMP Stack v3.0 - About Page Template
+Author: Silviu Ilie <neosilviu@gmail.com>
+Company: aemdPC
+Copyright © 2025 aemdPC. All rights reserved.
+-->
+{% extends "base.html" %}
+
+{% block title %}About LOMP Stack v3.0{% endblock %}
+{% block page_title %}About LOMP Stack v3.0{% endblock %}
+{% block subtitle %}Learn about the author and project{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Project Information Card -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        {{ author_info.project_name }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Project Details</h5>
+                            <table class="table table-borderless">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Project Name:</strong></td>
+                                        <td>{{ author_info.project_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Version:</strong></td>
+                                        <td>{{ author_info.version }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>License:</strong></td>
+                                        <td>{{ author_info.license }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Copyright:</strong></td>
+                                        <td>{{ author_info.copyright }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Description</h5>
+                            <p class="text-muted">
+                                LOMP Stack v3.0 is a comprehensive hosting solution that combines 
+                                Linux, OpenLiteSpeed, MySQL/MariaDB, and PHP with an advanced 
+                                hosting control panel. It provides modern web hosting capabilities 
+                                with support for Python applications, WordPress management, 
+                                and enterprise-grade features.
+                            </p>
+                            <div class="mt-3">
+                                <h6>Key Features:</h6>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success me-2"></i>Advanced Hosting Control Panel</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Python Applications Support</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>WordPress Management</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>SSL Automation</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Performance Monitoring</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Security Features</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Author Information Card -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-tie me-2"></i>
+                        Author Information
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <table class="table table-borderless">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Name:</strong></td>
+                                        <td>{{ author_info.name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Email:</strong></td>
+                                        <td>
+                                            <a href="mailto:{{ author_info.email }}" class="text-decoration-none">
+                                                <i class="fas fa-envelope me-1"></i>{{ author_info.email }}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Company:</strong></td>
+                                        <td>{{ author_info.company }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Role:</strong></td>
+                                        <td>{{ author_info.role }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="p-4 bg-light rounded">
+                                <i class="fas fa-code fa-4x text-primary mb-3"></i>
+                                <h6 class="text-muted">Passionate Developer</h6>
+                                <p class="small text-muted">
+                                    Dedicated to creating powerful, user-friendly hosting solutions
+                                    that empower developers and businesses worldwide.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Links and Resources Card -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-link me-2"></i>
+                        Resources & Links
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ author_info.repository }}" target="_blank" class="btn btn-outline-primary">
+                            <i class="fab fa-github me-2"></i>GitHub Repository
+                        </a>
+                        <a href="{{ author_info.documentation }}" target="_blank" class="btn btn-outline-info">
+                            <i class="fas fa-book me-2"></i>Documentation
+                        </a>
+                        <a href="{{ author_info.support }}" target="_blank" class="btn btn-outline-success">
+                            <i class="fas fa-life-ring me-2"></i>Support Portal
+                        </a>
+                        <a href="mailto:{{ author_info.email }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-envelope me-2"></i>Contact Author
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-handshake me-2"></i>
+                        Support & Contributing
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h6>Get Support</h6>
+                    <p class="text-muted small">
+                        Need help with LOMP Stack v3.0? We're here to assist you with 
+                        technical support, documentation, and community resources.
+                    </p>
+                    
+                    <h6>Contributing</h6>
+                    <p class="text-muted small">
+                        We welcome contributions from the community! Whether it's 
+                        bug reports, feature requests, or code contributions, 
+                        your input helps make LOMP Stack better.
+                    </p>
+                    
+                    <h6>License</h6>
+                    <p class="text-muted small">
+                        This project is open source under the {{ author_info.license }}.
+                        Feel free to use, modify, and distribute according to the license terms.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Technical Stack Card -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-layer-group me-2"></i>
+                        Technical Stack
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="text-center p-3 border rounded">
+                                <i class="fab fa-linux fa-3x text-dark mb-2"></i>
+                                <h6>Linux</h6>
+                                <small class="text-muted">Operating System</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center p-3 border rounded">
+                                <i class="fas fa-server fa-3x text-primary mb-2"></i>
+                                <h6>OpenLiteSpeed</h6>
+                                <small class="text-muted">Web Server</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center p-3 border rounded">
+                                <i class="fas fa-database fa-3x text-warning mb-2"></i>
+                                <h6>MySQL/MariaDB</h6>
+                                <small class="text-muted">Database</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center p-3 border rounded">
+                                <i class="fab fa-php fa-3x text-info mb-2"></i>
+                                <h6>PHP</h6>
+                                <small class="text-muted">Programming Language</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <div class="text-center p-3 border rounded">
+                                <i class="fab fa-python fa-3x text-success mb-2"></i>
+                                <h6>Python Apps</h6>
+                                <small class="text-muted">Flask, Django, FastAPI</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-3 border rounded">
+                                <i class="fab fa-wordpress fa-3x text-primary mb-2"></i>
+                                <h6>WordPress</h6>
+                                <small class="text-muted">CMS Integration</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-3 border rounded">
+                                <i class="fas fa-tachometer-alt fa-3x text-danger mb-2"></i>
+                                <h6>Control Panel</h6>
+                                <small class="text-muted">Web Management</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acknowledgments Card -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-heart me-2"></i>
+                        Acknowledgments
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">
+                        Special thanks to the open-source community, the OpenLiteSpeed development team,
+                        and all the contributors who have made this project possible. LOMP Stack v3.0
+                        stands on the shoulders of giants and represents the collaborative spirit of
+                        the open-source ecosystem.
+                    </p>
+                    
+                    <div class="text-center mt-4">
+                        <div class="border-top pt-3">
+                            <p class="mb-0">
+                                <strong>{{ author_info.project_name }}</strong> - 
+                                {{ author_info.copyright }}
+                            </p>
+                            <p class="text-muted small">
+                                Developed with ❤️ by {{ author_info.name }} at {{ author_info.company }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Add some interactive elements
+document.addEventListener('DOMContentLoaded', function() {
+    // Add hover effects to cards
+    document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+            this.style.transition = 'transform 0.3s ease';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+    
+    // Add click tracking for external links
+    document.querySelectorAll('a[target="_blank"]').forEach(link => {
+        link.addEventListener('click', function() {
+            console.log('External link clicked:', this.href);
+        });
+    });
+});
+</script>
+{% endblock %}

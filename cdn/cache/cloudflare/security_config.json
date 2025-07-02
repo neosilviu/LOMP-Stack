@@ -1,0 +1,7 @@
+{
+        "security_level": "medium",
+        "waf": "on",
+        "ddos_protection": "on",
+        "ssl": "strict",
+        "min_tls_version": "1.2"
+    }

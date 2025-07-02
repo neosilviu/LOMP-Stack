@@ -1,0 +1,379 @@
+<!--
+LOMP Stack v3.0 Template
+Author: Silviu Ilie <neosilviu@gmail.com>
+Company: aemdPC
+Copyright © 2025 aemdPC. All rights reserved.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Silviu Ilie - aemdPC">
+    <meta name="description" content="LOMP Stack v3.0 - Advanced Hosting Control Panel by Silviu Ilie">
+    <meta name="keywords" content="LOMP, hosting, control panel, Linux, OpenLiteSpeed, MySQL, PHP, Python">
+    <title>LOMP Stack v3.0 - {% block title %}API Administration{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .sidebar {
+            min-height: 100vh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+        
+        .main-content {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            min-height: 100vh;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .nav-link {
+            color: #333;
+            font-weight: 500;
+            border-radius: 10px;
+            margin: 2px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: 500;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            border: none;
+            border-radius: 10px;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+            border: none;
+            border-radius: 10px;
+        }
+        
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        
+        .table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .status-online {
+            color: #00b894;
+        }
+        
+        .status-offline {
+            color: #d63031;
+        }
+        
+        .status-warning {
+            color: #fdcb6e;
+        }
+        
+        .log-container {
+            background: #2d3748;
+            color: #e2e8f0;
+            font-family: 'Courier New', monospace;
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+        }
+        
+        /* Chart container fixes */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        .chart-container canvas {
+            position: absolute;
+            left: 0;
+            top: 0;
+            pointer-events: none;
+        }
+        
+        /* Prevent chart overflow */
+        .card-body .chart-container {
+            overflow: hidden;
+        }
+        
+        #performanceChart {
+            max-height: 300px !important;
+        }
+        
+        /* Navigation section headers */
+        .nav-section-header {
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            padding-left: 0.5rem;
+        }
+        
+        .nav-section-header small {
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid p-3">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3">
+                <div class="sidebar p-3">
+                    <div class="d-flex align-items-center mb-4">
+                        <i class="fas fa-server fa-2x text-primary me-3"></i>
+                        <div>
+                            <h5 class="mb-0">LOMP Stack v3.0</h5>
+                            <small class="text-muted">API Administration</small>
+                        </div>
+                    </div>
+                    
+                    <nav class="nav flex-column">
+                        <a class="nav-link active" href="/dashboard">
+                            <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                        </a>
+                        
+                        <!-- Hosting Management Section -->
+                        <div class="nav-section-header mt-3 mb-2">
+                            <small class="text-muted fw-bold">HOSTING MANAGEMENT</small>
+                        </div>
+                        <a class="nav-link" href="/hosting">
+                            <i class="fas fa-globe me-2"></i> Hosting Overview
+                        </a>
+                        <a class="nav-link" href="/sites">
+                            <i class="fas fa-server me-2"></i> Sites & Domains
+                        </a>
+                        <a class="nav-link" href="/wordpress">
+                            <i class="fab fa-wordpress me-2"></i> WordPress
+                        </a>
+                        <a class="nav-link" href="/python-apps">
+                            <i class="fab fa-python me-2"></i> Python Apps
+                        </a>
+                        <a class="nav-link" href="/services">
+                            <i class="fas fa-cogs me-2"></i> Services
+                        </a>
+                        
+                        <!-- API Management Section -->
+                        <div class="nav-section-header mt-3 mb-2">
+                            <small class="text-muted fw-bold">API MANAGEMENT</small>
+                        </div>
+                        <a class="nav-link" href="/api-keys">
+                            <i class="fas fa-key me-2"></i> API Keys
+                        </a>
+                        <a class="nav-link" href="/configuration">
+                            <i class="fas fa-cog me-2"></i> Configuration
+                        </a>
+                        <a class="nav-link" href="/monitoring">
+                            <i class="fas fa-chart-line me-2"></i> Monitoring
+                        </a>
+                        <a class="nav-link" href="/logs">
+                            <i class="fas fa-file-alt me-2"></i> Logs
+                        </a>
+                        <a class="nav-link" href="/updates">
+                            <i class="fas fa-download me-2"></i> Updates
+                        </a>
+                        
+                        <!-- Information Section -->
+                        <div class="nav-section-header mt-3 mb-2">
+                            <small class="text-muted fw-bold">INFORMATION</small>
+                        </div>
+                        <a class="nav-link" href="/about">
+                            <i class="fas fa-info-circle me-2"></i> About
+                        </a>
+                        <hr>
+                        <a class="nav-link text-danger" href="/logout">
+                            <i class="fas fa-sign-out-alt me-2"></i> Logout
+                        </a>
+                    </nav>
+                    
+                    <div class="mt-4 p-3 rounded" style="background: #f8f9fa;">
+                        <h6><i class="fas fa-user me-2"></i> Logged in as:</h6>
+                        <strong>{{ session.admin_user.username if session.admin_user else 'Guest' }}</strong>
+                        <br>
+                        <small class="text-muted">{{ session.admin_user.role if session.admin_user else '' }}</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-9">
+                <div class="main-content p-4">
+                    <!-- Header -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2>{% block page_title %}Dashboard{% endblock %}</h2>
+                            <p class="text-muted mb-0">{% block subtitle %}System overview and statistics{% endblock %}</p>
+                        </div>
+                        <div>
+                            <span class="badge bg-success fs-6">
+                                <i class="fas fa-circle me-1"></i> System Online
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Flash Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                                    <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'info-circle' }} me-2"></i>
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <!-- Main Content Area -->
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer with Author Information -->
+    <footer class="text-center py-3 mt-4" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 10px;">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-md-start">
+                    <span class="text-white-50">
+                        <i class="fas fa-code me-1"></i>
+                        Developed by <strong>Silviu Ilie</strong> at <strong>aemdPC</strong>
+                    </span>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <span class="text-white-50">
+                        LOMP Stack v3.0 © 2025 aemdPC
+                        <a href="mailto:neosilviu@gmail.com" class="text-white-50 ms-2">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                        <a href="https://support.aemdpc.com" class="text-white-50 ms-2" target="_blank">
+                            <i class="fas fa-question-circle"></i>
+                        </a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Auto-refresh stats every 30 seconds
+        setInterval(function() {
+            if (window.location.pathname === '/dashboard' || window.location.pathname === '/monitoring') {
+                refreshStats();
+            }
+        }, 30000);
+        
+        function refreshStats() {
+            fetch('/api/stats')
+                .then(response => response.json())
+                .then(data => {
+                    // Update stats if elements exist
+                    if (document.getElementById('cpu-usage')) {
+                        document.getElementById('cpu-usage').textContent = data.cpu_usage || '0%';
+                    }
+                    if (document.getElementById('memory-usage')) {
+                        document.getElementById('memory-usage').textContent = data.memory_usage || '0%';
+                    }
+                    if (document.getElementById('disk-usage')) {
+                        document.getElementById('disk-usage').textContent = data.disk_usage || '0%';
+                    }
+                    if (document.getElementById('total-keys')) {
+                        document.getElementById('total-keys').textContent = data.total_keys || '0';
+                    }
+                    if (document.getElementById('active-keys')) {
+                        document.getElementById('active-keys').textContent = data.active_keys || '0';
+                    }
+                })
+                .catch(error => console.error('Error refreshing stats:', error));
+        }
+        
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    </script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>
