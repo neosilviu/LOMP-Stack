@@ -15,7 +15,11 @@ După acest tutorial vei avea:
 ## 📋 Cerințe
 
 ### Server necesar:
-- **OS:** Ubuntu 20.04+ sau Debian 11+
+- **OS:** Ubuntu### 📞 **Suport:**
+- **Issues:** [GitHub Issues](https://github.com/neosilviu/LOMP-Stack/issues)
+- **Docs:** [README.md](../docs/README.md)
+
+### 🎯 **Te-a ajutat?**4+ sau Debian 11+
 - **RAM:** 2GB minim (4GB recomandat)
 - **Disk:** 20GB spațiu liber
 - **CPU:** 1 vCPU minim
@@ -49,26 +53,9 @@ Copiază și lipește aceste comenzi:
 # Actualizare sistem
 sudo apt update && sudo apt upgrade -y
 
-# Instalare tools de bază  
-sudo apt install -y git curl wget nano
-```
-
----
-
-## 📥 **Pasul 3: Descărcare LOMP Stack**
-
-```bash
-# Descarcă proiectul
+# Clonare LOMP Stack
 git clone https://github.com/neosilviu/LOMP-Stack.git
-
-# Intră în folder
 cd LOMP-Stack
-
-# Verifică fișierele
-ls -la
-```
-
-**Trebuie să vezi:** `install.sh`, `helpers/`, `api/`, `README.md`
 
 ---
 
@@ -76,10 +63,10 @@ ls -la
 
 ```bash
 # Fă scriptul executabil
-chmod +x install.sh
+chmod +x scripts/install.sh
 
 # Începe instalarea (10-15 minute)
-sudo ./install.sh
+sudo scripts/install.sh
 ```
 
 ### Ce se instalează:
@@ -258,7 +245,7 @@ Ai instalat cu succes **LOMP Stack v3.0** și primul site WordPress!
 
 ### 📞 **Suport:**
 - **Issues:** [GitHub Issues](https://github.com/neosilviu/LOMP-Stack/issues)
-- **Docs:** [README.md](../README.md)
+- **Docs:** [README.md](../docs/README.md)
 
 ### 🎯 **Te-a ajutat?**
 ⭐ Marchează proiectul pe GitHub!
@@ -762,7 +749,7 @@ tail -f /var/log/syslog
 📚 **Documentație:**
 - [WordPress Official Documentation](https://wordpress.org/support/)
 - [OpenLiteSpeed Wiki](https://openlitespeed.org/mediawiki/)
-- [LOMP Stack Advanced Guide](../README.md)
+- [LOMP Stack Advanced Guide](../docs/README.md)
 
 🎥 **Tutoriale Video:**
 - Tutorial video complet (în curând)
